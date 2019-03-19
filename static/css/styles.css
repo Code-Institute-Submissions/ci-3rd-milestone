@@ -63,3 +63,9 @@ body {
 .form-container {
     max-width: 500px;
 }
+
+.note {
+    color: #868686;
+    margin-top: 3rem;
+    font-weight: 300;
+}
