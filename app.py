@@ -1,6 +1,6 @@
 import os
 import pymysql
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from lib.db import new_connection
 
 # Initialize Flask
@@ -35,7 +35,7 @@ def signup():
         finally:
             connection.close()
 
-        return 'Record saved!'
+        return jsonify(message='Record saved!')
 
 
 @app.route('/db')
