@@ -1,7 +1,8 @@
 
 
 const signupUser = (btn) => {
-    const form = btn.parentNode;
+    console.log(btn);
+    const form = btn.parentNode.parentNode.parentNode;
 
     const formParams = {
         firstname: form.querySelector('[name=firstname]').value,
@@ -9,6 +10,10 @@ const signupUser = (btn) => {
         email: form.querySelector('[name=email]').value,
         password: form.querySelector('[name=password]').value
     };
+
+    // MOdify DOM
+    $(btn).toggleClass('disabled');
+    $('.signup-loading').css('visibility', 'visible');
 
     fetch('/signup', {
         method: 'POST',
@@ -19,7 +24,10 @@ const signupUser = (btn) => {
     }).then(res => {
         return res.json();
     }).then(data => {
-        console.log(data);
+        if (data.status == 'ok') {
+            $(btn).toggleClass('disabled');
+            $('.signup-loading').css('visibility', 'hidden');
+        }
     }).catch(err => {
         console.log(err)
     })

@@ -35,7 +35,7 @@ def signup():
         finally:
             connection.close()
 
-        return jsonify(message='Record saved!')
+        return jsonify(message='Record saved!', status='ok')
 
 
 @app.route('/db')
