@@ -28,7 +28,16 @@ app = Flask(__name__)
 # Index page
 @app.route('/')
 def index():
-    return render_template('index.html', pageTitle='Home - Tasting Experience')
+    return render_template('index.html', pageTitle='Home - Tasting Experience', navBar=False)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'GET':
+        return render_template('signup.html', pageTitle='Sign Up - Tasting Experience', navBar=True)
+    else:
+        return str(request.form.to_dict())
+
 
 # Test db route
 @app.route('/db')

@@ -17,16 +17,20 @@
   <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
 </head>
 
-<body>
+<body class="grey lighten-5">
+  {% if navBar %}
+  <nav class="white"> 
+  {% else %}
   <nav class="transparent z-depth-0">
+  {% endif %}
     <div class="container">
       <div class="nav-wrapper">
-        <a href="#" class="brand-logo"><img src="{{ url_for('static',filename='images/logo-white.png') }}"
+        <a href="/" class="brand-logo"><img {% if navBar %}  src="{{ url_for('static',filename='images/logo-black.png') }}" {% else %}  src="{{ url_for('static',filename='images/logo-white.png') }}" {% endif %}
             class="logo"></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="sass.html">Home</a></li>
-          <li><a href="badges.html">Drinks</a></li>
-          <li><a href="collapsible.html">My Dashboard</a></li>
+          <li><a href="sass.html" {% if navBar %} class="black-text" {% endif %}>Home</a></li>
+          <li><a href="badges.html" {% if navBar %} class="black-text" {% endif %}>Drinks</a></li>
+          <li><a href="collapsible.html" {% if navBar %} class="black-text" {% endif %}>My Dashboard</a></li>
           <li><a class="waves-effect waves-light btn-small deep-orange darken-1">Login</a></li>
         </ul>
       </div>
