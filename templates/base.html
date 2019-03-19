@@ -6,16 +6,36 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ pageTitle }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" media="screen" href="main.css">
-  <script src="main.js"></script>
+
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Materialize -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
 </head>
 
 <body>
-  <h1>Welcome!</h1>
-
+  <nav class="transparent z-depth-0">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo"><img src="{{ url_for('static',filename='images/logo-white.png') }}"
+            class="logo"></a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="sass.html">Home</a></li>
+          <li><a href="badges.html">Drinks</a></li>
+          <li><a href="collapsible.html">My Dashboard</a></li>
+          <li><a class="waves-effect waves-light btn-small deep-orange darken-1">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   {% block content %}
   {% endblock %}
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 
 </html>

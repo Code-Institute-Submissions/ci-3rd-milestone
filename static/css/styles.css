@@ -1,0 +1,60 @@
+body {
+    font-size: 14px;
+}
+.logo {
+    height: 40px;
+    margin-top: 8px;
+}
+
+.home-banner {
+    display: flex;
+    position: absolute;
+    justify-content: space-around;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: url('/static/images/home-page-small.jpg') no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+
+.opaque-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(33, 19, 9, 0.3)
+}
+
+.jumbotron {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: 120px; 
+    width: 100%;
+    max-width: 800px;
+    margin: 0 10rem;
+    color: white;
+    text-align: center;
+    align-items: center;
+}
+
+.jumbotron h3 {
+    font-weight: 700;
+}
+
+.jumbotron p {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 100;
+}
+
+.jumbotron a {
+    display: inline-block;
+    width: 200px;
+    margin-top: 5rem;
+}

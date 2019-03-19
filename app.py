@@ -50,6 +50,11 @@ def hello():
 
 # Run the webserver
 if __name__ == '__main__':
-    app.config.from_object('configurations.DevelopmentConfig')
+    settings = {
+        'DEBUG': True
+    }
+
+    app.config.update(settings)
+
     app.run(os.environ.get('IP'),
             port=int(os.environ.get('PORT')))
