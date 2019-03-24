@@ -72,6 +72,9 @@ const signupUser = (btn) => {
 
             // Reset button and loading text
             $(btn).toggleClass('disabled');
+
+            // Remove loading text
+            $('.login-loading').css('visibility', 'hidden');
         }
 
 

@@ -2,29 +2,29 @@ import os
 import pymysql
 import hashlib
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
-from lib.db import new_connection
+from lib.db import new_connection, initialize_db
 from lib.scripts import user_logged_in
 
 # Initialize Flask
 app = Flask(__name__)
 app.secret_key = os.urandom(32)
 
+# Initialize db
+# initialize_db()
 
 # ============================================================================== INDEX
 @app.route('/')
 def index():
 
-    logged_in = user_logged_in()
-
     return render_template('index.html',
                            pageTitle='Home - Tasting Experience',
-                           navBar=False, logged_in=logged_in)
+                           navBar=False, logged_in=user_logged_in())
 
 # ============================================================================== SIGN UP
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
-        return render_template('signup.html', pageTitle='Sign Up - Tasting Experience', navBar=True)
+        return render_template('signup.html', pageTitle='Sign Up - Tasting Experience', navBar=True, logged_in=user_logged_in())
     elif request.method == 'POST':
         # Get form params
         firstname = request.form.get('firstname', None)
@@ -68,7 +68,7 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', pageTitle='Login - Tasting Experience', navBar=True)
+        return render_template('login.html', pageTitle='Login - Tasting Experience', navBar=True, logged_in=user_logged_in())
     elif request.method == 'POST':
         # Delete user seesion
         session.pop('logged_in', None)
@@ -121,7 +121,13 @@ def logout():
 # ============================================================================== DASHBOARD
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('dashboard.html', pageTitle='My Dashboard - Tasting Experience', navBar=True)
+    return render_template('dashboard.html', pageTitle='My Dashboard - Tasting Experience', navBar=True, logged_in=user_logged_in())
+
+
+# ============================================================================== NOT FOUND
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('not_found.html', pageTitle='Not Found - Tasting Experience', navBar=True, logged_in=user_logged_in()), 404
 
 
 # Run the webserver
