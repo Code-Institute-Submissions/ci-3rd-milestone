@@ -71,5 +71,9 @@ body {
 }
 
 .signup-loading {
-    visibility:hidden;
+    visibility: hidden;
+}
+
+.login-loading {
+    visibility: hidden;
 }

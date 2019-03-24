@@ -2,46 +2,29 @@
 {% block content %}
 <div class="container form-container">
     <div class="row">
-        <h3>Sign Up</h3>
-        <p>We would like to welcome you onboard! Please fill in the following form and join the community.</p>
+        <h3>Login</h3>
     </div>
     <div class="row">
         <div class="col s12">
             <div class="row">
-                <div class="input-field col s6">
-                    <input id="first_name" type="text" name="firstname" class="validate">
-                    <label for="first_name">First Name</label>
-                </div>
-                <div class="input-field col s6">
-                    <input id="last_name" type="text" name="lastname" class="validate">
-                    <label for="last_name">Last Name</label>
-                </div>
-            </div>
-            <div class="row">
                 <div class="input-field col s12">
-                    <input id="email" type="email" name="email" class="validate">
+                    <input id="email" type="email" name="email">
                     <label for="email">Email</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <input id="password" type="password" name="password" class="validate">
+                    <input id="password" type="password" name="password">
                     <label for="password">Password</label>
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s12">
-                    <input id="repeat_password" name="repeat_password" type="password" class="validate">
-                    <label for="repeat_password">Repeat password</label>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col s4">
-                    <button class="btn waves-effect waves-light deep-orange darken-1" onclick="signupUser(this)">Signup
+                    <button class="btn waves-effect waves-light deep-orange darken-1" onclick="logInUser(this)">Login
                         <i class="material-icons right">send</i>
                     </button>
                 </div>
-                <div class="signup-loading">
+                <div class="login-loading">
                     <div class="col s2">
                         <div class="preloader-wrapper small active">
                             <div class="spinner-layer spinner-blue-only">
@@ -58,16 +41,16 @@
                         </div>
                     </div>
                     <div class="col 6">
-                        <p>Signing up, please wait</p>
+                        <p>Logging in, please wait</p>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="row">
-        <p class="note"><em>*NOTE please do not use a real password! This project does not support safe storage of
-                password!</em></p>
+        <p class="note">Not having an account? You can subscribe <a href="/signup"
+                class="deep-orange-text text-darken-1">here</a>
+            and join our community!</p>
     </div>
 </div>
 {% endblock %}
