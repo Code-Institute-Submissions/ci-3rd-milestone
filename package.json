@@ -1,0 +1,29 @@
+{
+  "name": "ci-3rd-milestone",
+  "version": "1.0.0",
+  "description": "This project is build upon [The Tasting Experience](https://github.com/Seboeb/ci-1st-milestone) and [The Tasting Experience Finder](https://github.com/Seboeb/ci-2nd-milestone) project. At The Tasting Experience website you can book a cultural tasting for your friends or beloved ones and at the Tasting Finder website you can find a fancy place to grab some nice drinks. This page allows the fans of The Tasting Experience to find, create and share recipes of some delicous drinks created by the fans!",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Seboeb/ci-3rd-milestone.git"
+  },
+  "author": "Sebastiaan Hekner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Seboeb/ci-3rd-milestone/issues"
+  },
+  "homepage": "https://github.com/Seboeb/ci-3rd-milestone#readme",
+  "devDependencies": {
+    "handlebars": "^4.1.1",
+    "handlebars-loader": "^1.7.1",
+    "path": "^0.12.7",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  }
+}

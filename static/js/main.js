@@ -1,3 +1,6 @@
+testTemplate = require('../../templates/handlebars/test.hbs');
+
+
 // ----------------------------------------------------------------------------- SIGN UP
 const signupUser = (btn) => {
     // Get form data
@@ -148,4 +151,27 @@ const logInUser = (btn) => {
         console.log(err)
     })
 
+}
+
+
+function myTest() {
+    const data = [
+        {
+            name: 'hoi'
+        },
+        {
+            name: 'doei'
+        }
+    ]
+
+
+    console.log(testTemplate(data));
+}
+
+
+// ----------------------------------------------------------------------------- EXPORTS
+module.exports = {
+    signupUser: signupUser,
+    logInUser: logInUser,
+    myTest: myTest
 }
