@@ -1,5 +1,25 @@
 testTemplate = require('../../templates/handlebars/test.hbs');
+Croppie = require('croppie');
 
+// var el = document.getElementById('croppie');
+// var vanilla = new Croppie(el, {
+//     viewport: { width: 150, height: 150, type: 'circle' },
+//     boundary: { width: 200, height: 200 },
+//     showZoomer: true,
+//     enableOrientation: true
+// });
+
+var basic = $('#croppie').croppie({
+    viewport: {
+        width: 200,
+        height: 200
+    },
+    boundary: { width: 250, height: 250 },
+});
+basic.croppie('bind', {
+    url: 'static/images/home-page-small.jpg',
+    points: [77, 469, 280, 739]
+});
 
 // ----------------------------------------------------------------------------- SIGN UP
 const signupUser = (btn) => {
@@ -173,5 +193,8 @@ function myTest() {
 module.exports = {
     signupUser: signupUser,
     logInUser: logInUser,
-    myTest: myTest
+    myTest: myTest,
+    croppie: croppie
 }
+
+// https://codepen.io/asrulnurrahim/pen/WOyzxy

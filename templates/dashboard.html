@@ -1,10 +1,110 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    <h1>Welcome</h1>
-    <div class="progress deep-orange lighten-4">
-        <div class="indeterminate deep-orange darken-1"></div>
+    <div class="row">
+        <div class="col s12 title">
+            <h3>Dashboard</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <div class="my-wrapper">
+                <div id="croppie"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div class="dashboard-card">
+                <div class="row">
+                    <div class="col s12">
+                        <h5>Personal</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6"><strong>First name</strong> Sebastiaan</div>
+                    <div class="col s6"><strong>Email</strong> shekner@gmail.com</div>
+                </div>
+                <div class="row">
+                    <div class="col s6"><strong>Last name</strong> Hekner</div>
+                    <div class="col s6"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col m7 s12">
+            <div class="dashboard-card">
+                <div class="row">
+                    <div class="col s12">
+                        <h5>My recipes</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 m10">
+                        <div class="card horizontal">
+                            <div class="card-image">
+                                <img src="https://lorempixel.com/100/190/nature/6">
+                            </div>
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#">This is a link</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m10">
+                        <div class="card horizontal">
+                            <div class="card-image">
+                                <img src="https://lorempixel.com/200/90/nature/6">
+                            </div>
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <p><strong>My title</strong></p>
+                                    <p>I am a very simple card. I am good at containing small bits of information.</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#">View</a>
+                                    <a href="#">Edit</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m10">
+                        <div class="card horizontal">
+                            <div class="card-image">
+                                <img src="https://lorempixel.com/100/190/nature/6">
+                            </div>
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#">This is a link</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col m5 s12">
+            <div class="dashboard-card">
+                <div class="row">
+                    <div class="col s12">
+                        <h5>My favorites</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- <div class="loader-container">
+    <div class="loader"></div>
+</div> -->
 {% endblock %}
