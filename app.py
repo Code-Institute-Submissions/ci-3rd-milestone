@@ -1,6 +1,7 @@
 import os
 import pymysql
 import hashlib
+import base64
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from lib.db import new_connection, initialize_db
 from lib.scripts import user_logged_in
@@ -123,6 +124,27 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', pageTitle='My Dashboard - Tasting Experience', navBar=True, logged_in=user_logged_in())
 
+
+@app.route('/image', methods=['GET','POST'])
+def image():
+    if request.method == 'POST':
+        print(request.is_json)
+        content = request.get_json()
+        print(content['data'])
+        data = content['data']
+        imgdata = base64.b64decode(data)
+        filename = 'static/images/upload/some_image.jpeg'  # I assume you have a way of picking unique filenames
+        with open(filename, 'wb') as f:
+                f.write(imgdata)
+
+        return redirect(url_for('index'))
+    if request.method == 'GET':
+        print('hoi')
+        return 'hoi'
+# imgdata = base64.b64decode(data)
+# filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
+# with open(filename, 'wb') as f:
+#         f.write(imgdata)
 
 # ============================================================================== NOT FOUND
 @app.errorhandler(404)

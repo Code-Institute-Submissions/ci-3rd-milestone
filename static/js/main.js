@@ -1,28 +1,64 @@
-testTemplate = require('../../templates/handlebars/test.hbs');
-Croppie = require('croppie');
+const testTemplate = require('../../templates/handlebars/test.hbs');
+const Croppie = require('croppie');
 
-// var el = document.getElementById('croppie');
-// var vanilla = new Croppie(el, {
-//     viewport: { width: 150, height: 150, type: 'circle' },
-//     boundary: { width: 200, height: 200 },
-//     showZoomer: true,
-//     enableOrientation: true
-// });
 
-var basic = $('#croppie').croppie({
-    viewport: {
-        width: 200,
-        height: 200
-    },
-    boundary: { width: 250, height: 250 },
+
+
+// ----------------------------------------------------------------------------- CROPPIE LISTENERS
+let croppieObject;
+$('.croppie-file-input').on('change', event => {
+    if ($('.croppie-file-input')[0].files[0]){
+        console.log('Image found in input field');
+
+        const fileupload = $('.croppie-file-input')[0].files[0];
+        const reader = new FileReader();
+
+        // Read data in reader object
+        reader.readAsDataURL(fileupload);
+
+        // Function: start croppie object and bind image to div
+        reader.onloadend = function(){
+            croppieObject = $('#croppie').croppie({
+                viewport: {
+                    width: 150,
+                    height: 200
+                },
+                boundary: { width: 250, height: 250 },
+            });
+            croppieObject.croppie('bind', {
+                url: this.result
+            });
+        }
+    } else {
+        console.log('No file found in input field');
+    }  
 });
-basic.croppie('bind', {
-    url: 'static/images/home-page-small.jpg',
-    points: [77, 469, 280, 739]
-});
+
+$('.my-button').on('click', function(){
+    if (croppieObject) {
+        croppieObject.croppie('result', {
+            type: 'base64',
+            format: 'jpg',
+            size: {width: 300, height: 400}
+        }).then( resp => {
+            $('.my-image').attr('src',resp);
+
+            // Send response to sercer
+            fetch('/image',{
+                method: 'POST',
+                body: JSON.stringify({data: resp.split(',')[1]}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => console.log(res))
+        })
+    } else {
+        console.log('No croppie object found');
+    }
+})
 
 // ----------------------------------------------------------------------------- SIGN UP
-const signupUser = (btn) => {
+const signupUser = btn => {
     // Get form data
     const form = btn.parentNode.parentNode.parentNode;
 
@@ -108,7 +144,7 @@ const signupUser = (btn) => {
 }
 
 // ----------------------------------------------------------------------------- LOGIN
-const logInUser = (btn) => {
+const logInUser = btn => {
     // Get form data
     const form = btn.parentNode.parentNode.parentNode;
 
@@ -193,8 +229,7 @@ function myTest() {
 module.exports = {
     signupUser: signupUser,
     logInUser: logInUser,
-    myTest: myTest,
-    croppie: croppie
+    myTest: myTest
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy
