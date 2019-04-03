@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{{ pageTitle }}</title>
+  <title>{{ pageTitle }} - Tasting Experience</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 
@@ -14,8 +14,9 @@
   <!-- Materialize -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-  <!-- Croppie CSS -->
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/croppie.css') }}">
+  <!-- CSS Block -->
+  {% block css_style %}
+  {% endblock %}
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
 </head>
@@ -51,6 +52,9 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.bundle.js') }}"></script>
+    {% block script %}
+    {% endblock %}
+
 </body>
 
 </html>

@@ -7,7 +7,7 @@ const Croppie = require('croppie');
 // ----------------------------------------------------------------------------- CROPPIE LISTENERS
 let croppieObject;
 $('.croppie-file-input').on('change', event => {
-    if ($('.croppie-file-input')[0].files[0]){
+    if ($('.croppie-file-input')[0].files[0]) {
         console.log('Image found in input field');
 
         const fileupload = $('.croppie-file-input')[0].files[0];
@@ -17,13 +17,13 @@ $('.croppie-file-input').on('change', event => {
         reader.readAsDataURL(fileupload);
 
         // Function: start croppie object and bind image to div
-        reader.onloadend = function(){
+        reader.onloadend = function () {
             croppieObject = $('#croppie').croppie({
                 viewport: {
-                    width: 150,
-                    height: 200
+                    width: 210,
+                    height: 280
                 },
-                boundary: { width: 250, height: 250 },
+                boundary: { width: 300, height: 300 },
             });
             croppieObject.croppie('bind', {
                 url: this.result
@@ -31,22 +31,22 @@ $('.croppie-file-input').on('change', event => {
         }
     } else {
         console.log('No file found in input field');
-    }  
+    }
 });
 
-$('.my-button').on('click', function(){
+$('.my-button').on('click', function () {
     if (croppieObject) {
         croppieObject.croppie('result', {
             type: 'base64',
             format: 'jpg',
-            size: {width: 300, height: 400}
-        }).then( resp => {
-            $('.my-image').attr('src',resp);
+            size: { width: 300, height: 400 }
+        }).then(resp => {
+            $('.my-image').attr('src', resp);
 
             // Send response to sercer
-            fetch('/image',{
+            fetch('/image', {
                 method: 'POST',
-                body: JSON.stringify({data: resp.split(',')[1]}),
+                body: JSON.stringify({ data: resp.split(',')[1] }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -185,7 +185,7 @@ const logInUser = btn => {
     }).then(res => {
         // Check for redirect
         if (res.redirected) {
-            return window.location.replace('/dashboard');
+            return window.location.replace(res.url);
         }
 
         // Convert response to JSON
@@ -209,6 +209,67 @@ const logInUser = btn => {
 
 }
 
+// ----------------------------------------------------------------------------- ADD RECIPE
+const addRecipe = btn => {
+    const form = btn.parentNode.parentNode.parentNode;
+
+    // Get values from input fields
+    const formParams = {
+        title: form.querySelector('[name=title]').value,
+        description: form.querySelector('[name=description]').value,
+        recipe: form.querySelector('[name=recipe]').value,
+        image_name: "",
+        image_base64: ""
+    };
+
+    // Check if file was uploaded
+    if ($('.croppie-file-input')[0].files[0]) {
+        console.log($('.croppie-file-input')[0].files[0])
+        formParams.image_name = $('.croppie-file-input')[0].files[0].name;
+    } else {
+        return M.toast({ html: 'Please upload a photo', classes: 'red darken-1' });
+    }
+
+    // Check if values are not empty
+    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "") {
+        return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
+    }
+
+    // Check if croppie object exists
+    if (croppieObject) {
+        croppieObject.croppie('result', {
+            type: 'base64',
+            format: 'jpg',
+            size: { width: 300, height: 400 }
+        }).then(resp => {
+
+            // Add base64 image data
+            formParams.image_base64 = resp.split(',')[1];
+
+            // Open load bar
+            $('body').append(`<div class="loader-container">
+                                    <div class="loader"></div>
+                                </div>`);
+
+            // Send response to sercer
+            fetch('http://citest.eu.ngrok.io/recipe', {
+                method: 'POST',
+                body: JSON.stringify(formParams),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                console.log(res)
+                if (res.redirected) {
+                    return window.location.replace(res.url);
+                }
+            })
+        })
+    } else {
+        return M.toast({ html: 'Please upload a photo', classes: 'red darken-1' });
+    }
+}
+
 
 function myTest() {
     const data = [
@@ -229,6 +290,7 @@ function myTest() {
 module.exports = {
     signupUser: signupUser,
     logInUser: logInUser,
+    addRecipe: addRecipe,
     myTest: myTest
 }
 

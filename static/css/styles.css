@@ -88,13 +88,14 @@ nav {
 .loader-container {
     position: fixed;
     display: flex;
-    top: 64px;
+    top: 0;
     left: 0;
     right: 0;
-    bottom: 64px;
+    bottom: 0;
     align-items: center;
     justify-content: space-around;
     z-index: 1000;
+    background-color: rgb(245, 80, 30,0.15);
 }
 
 .loader {
@@ -177,10 +178,45 @@ nav {
 }
 
 .title {
-    color: #777;
+    color: #000;
 }
 
 #croppie {
+    position: absolute;
+    top: 0;
     width: 300px;
     height: 300px
+}
+
+.croppie-container {
+    position: relative;
+}
+
+.side-note p {
+    font-weight: 100;
+    font-size: 28px;
+    line-height: 2;
+    color: #9a9696;
+}
+
+.right-border { 
+    border-right: 1px solid #dbdbdb;
+}
+
+.left-border {
+    border-left: 1px solid #dbdbdb;
+    padding-left: 2rem !important;
+    margin-left: 2rem !important;
+}
+
+.label-file-input:hover{
+    cursor: pointer;
+}
+
+.croppie-file-input {
+    display: none;
+}
+
+.upload-img {
+    display: inline-block;
 }

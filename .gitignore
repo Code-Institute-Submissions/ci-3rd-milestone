@@ -3,3 +3,4 @@ mysql-test.py
 config.json
 node_modules
 static/js/Croppie-2.6.2
+static/images/upload

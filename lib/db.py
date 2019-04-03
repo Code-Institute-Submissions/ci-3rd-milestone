@@ -171,3 +171,40 @@ def initialize_db():
         print(err)
     # Close the connection
     connection.close()
+
+
+'''
+This function creates a new recipe in the database
+
+TABLES
+- users
+- comments
+- recipes
+- ratings
+- labels
+- label_recipe
+- favorites
+'''
+
+
+def create_recipe(recipe_data):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''INSERT INTO `recipes` (`user_id`, `title`, `description`, `recipe`, `image_path`)
+                    VALUES (%s, %s, %s, %s, %s)'''
+
+            # Execute query
+            cursor.execute(sql, (recipe_data['user_id'], recipe_data['title'],
+                                 recipe_data['description'], recipe_data['recipe'], recipe_data['image_path']))
+
+            # Commit to database
+            connection.commit()
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+        return True

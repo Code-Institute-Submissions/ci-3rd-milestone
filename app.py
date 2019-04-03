@@ -2,13 +2,15 @@ import os
 import pymysql
 import hashlib
 import base64
+import datetime
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
-from lib.db import new_connection, initialize_db
+from lib.db import new_connection, initialize_db, create_recipe
 from lib.scripts import user_logged_in
 
 # Initialize Flask
 app = Flask(__name__)
-app.secret_key = os.urandom(32)
+# app.secret_key = os.urandom(32)
+app.secret_key = 'KbHRUcjZmYTrfieBoO4185IeJodq41sA'
 
 # Initialize db
 # initialize_db()
@@ -18,14 +20,14 @@ app.secret_key = os.urandom(32)
 def index():
 
     return render_template('index.html',
-                           pageTitle='Home - Tasting Experience',
+                           pageTitle='Home',
                            navBar=False, logged_in=user_logged_in())
 
 # ============================================================================== SIGN UP
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
-        return render_template('signup.html', pageTitle='Sign Up - Tasting Experience', navBar=True, logged_in=user_logged_in())
+        return render_template('signup.html', pageTitle='Sign Up', navBar=True, logged_in=user_logged_in())
     elif request.method == 'POST':
         # Get form params
         firstname = request.form.get('firstname', None)
@@ -69,7 +71,7 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', pageTitle='Login - Tasting Experience', navBar=True, logged_in=user_logged_in())
+        return render_template('login.html', pageTitle='Login', navBar=True, logged_in=user_logged_in())
     elif request.method == 'POST':
         # Delete user seesion
         session.pop('logged_in', None)
@@ -83,7 +85,7 @@ def login():
 
         try:
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-                sql = "SELECT `password` FROM `users` WHERE `email`=%s"
+                sql = "SELECT `password`, `id` FROM `users` WHERE `email`=%s"
                 cursor.execute(sql, (email))
 
                 # Get result
@@ -101,6 +103,11 @@ def login():
                     # Set session
                     session['email'] = email
                     session['logged_in'] = True
+                    session['user_id'] = result['id']
+
+                    # Logs
+                    print('User logged in')
+                    print(session)
 
                     return redirect(url_for('dashboard'))
                 else:
@@ -117,15 +124,19 @@ def logout():
     # Remove logged_in key
     session.pop('logged_in', None)
 
+    # Logs
+    print('User logged out')
+    print(session)
+
     return redirect(url_for('index'))
 
 # ============================================================================== DASHBOARD
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('dashboard.html', pageTitle='My Dashboard - Tasting Experience', navBar=True, logged_in=user_logged_in())
+    return render_template('dashboard.html', pageTitle='My Dashboard', navBar=True, logged_in=user_logged_in())
 
-
-@app.route('/image', methods=['GET','POST'])
+# ============================================================================== IMAGE
+@app.route('/image', methods=['GET', 'POST'])
 def image():
     if request.method == 'POST':
         print(request.is_json)
@@ -133,23 +144,50 @@ def image():
         print(content['data'])
         data = content['data']
         imgdata = base64.b64decode(data)
-        filename = 'static/images/upload/some_image.jpeg'  # I assume you have a way of picking unique filenames
+        # I assume you have a way of picking unique filenames
+        filename = 'static/images/upload/some_image.jpeg'
         with open(filename, 'wb') as f:
-                f.write(imgdata)
+            f.write(imgdata)
 
         return redirect(url_for('index'))
     if request.method == 'GET':
         print('hoi')
         return 'hoi'
-# imgdata = base64.b64decode(data)
-# filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
-# with open(filename, 'wb') as f:
-#         f.write(imgdata)
+
+# ============================================================================== RECIPE
+@app.route('/recipe', methods=['GET', 'POST'])
+def recipe():
+    if request.method == 'GET':
+        return render_template('recipe.html', pageTitle='Add Recipe', navBar=True, logged_in=user_logged_in())
+    elif request.method == 'POST':
+        if request.is_json:
+            recipe_data = request.get_json()
+            date_string = datetime.datetime.now().strftime('%c')
+
+            # Get and process image data
+            img_data = base64.b64decode(recipe_data['image_base64'])
+            image_path = 'static/images/upload/recipe-' + \
+                date_string.replace(' ', '-') + '.jpg'
+            with open(image_path, 'wb') as f:
+                f.write(img_data)
+
+            recipe_data['user_id'] = session['user_id']
+            recipe_data['image_path'] = image_path
+
+            # Create new recipe
+            db_operation = create_recipe(recipe_data)
+
+            if db_operation:
+                return redirect(url_for('dashboard'))
+            else:
+                return jsonify(message='Something went wrong during database operation', status='failed')
+        else:
+            return jsonify(message='Please provide json request', status='failed')
 
 # ============================================================================== NOT FOUND
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('not_found.html', pageTitle='Not Found - Tasting Experience', navBar=True, logged_in=user_logged_in()), 404
+    return render_template('not_found.html', pageTitle='Not Found', navBar=True, logged_in=user_logged_in()), 404
 
 
 # Run the webserver
