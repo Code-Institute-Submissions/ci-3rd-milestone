@@ -98,6 +98,18 @@ nav {
     background-color: rgb(245, 80, 30,0.15);
 }
 
+.loader-container-inline {
+    position: static;
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1000;
+}
+
 .loader {
     position: relative;
     display: block;
@@ -219,4 +231,8 @@ nav {
 
 .upload-img {
     display: inline-block;
+}
+
+.recipe-image {
+    height: 200px;
 }

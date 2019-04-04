@@ -64,6 +64,7 @@ def initialize_db():
                         `recipe` varchar(256) NOT NULL,
                         `views` int DEFAULT 0,
                         `image_path` varchar(256),
+                        `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         PRIMARY KEY (id),
                         FOREIGN KEY (user_id) REFERENCES users(id)
                         )'''
@@ -176,14 +177,6 @@ def initialize_db():
 '''
 This function creates a new recipe in the database
 
-TABLES
-- users
-- comments
-- recipes
-- ratings
-- labels
-- label_recipe
-- favorites
 '''
 
 
@@ -208,3 +201,56 @@ def create_recipe(recipe_data):
     finally:
         connection.close()
         return True
+
+
+'''
+This function gets all recipes from a specific user
+
+'''
+
+
+def get_recipes(user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''SELECT `title`, `description`, `recipe`, `views`, `image_path` 
+                    FROM `recipes` WHERE `user_id`=%s'''
+
+            # Execute command
+            cursor.execute(sql, (user_id))
+
+            # Get all results
+            result = cursor.fetchall()
+            return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets personal user data
+
+'''
+
+
+def get_user_data(user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'SELECT `firstname`, `lastname`, `email`, `image_path` FROM `users` WHERE `id`=%s'
+
+            # Execute command
+            cursor.execute(sql, (user_id))
+
+            # Get all results
+            result = cursor.fetchone()
+            return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()

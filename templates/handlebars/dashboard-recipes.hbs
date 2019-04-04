@@ -1,0 +1,21 @@
+{{#each this}}
+<div class="row">
+  <div class="col s12 m10">
+    <div class="card horizontal">
+      <div class="card-image">
+        <img src="{{image_path}}" class="recipe-image">
+      </div>
+      <div class="card-stacked">
+        <div class="card-content">
+          <p><strong>{{title}}</strong></p>
+          <p>{{description}}</p>
+        </div>
+        <div class="card-action">
+          <a href="#">View</a>
+          <a href="#">Edit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{/each}}

@@ -4,7 +4,7 @@ import hashlib
 import base64
 import datetime
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
-from lib.db import new_connection, initialize_db, create_recipe
+from lib.db import new_connection, initialize_db, create_recipe, get_recipes, get_user_data
 from lib.scripts import user_logged_in
 
 # Initialize Flask
@@ -135,24 +135,6 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', pageTitle='My Dashboard', navBar=True, logged_in=user_logged_in())
 
-# ============================================================================== IMAGE
-@app.route('/image', methods=['GET', 'POST'])
-def image():
-    if request.method == 'POST':
-        print(request.is_json)
-        content = request.get_json()
-        print(content['data'])
-        data = content['data']
-        imgdata = base64.b64decode(data)
-        # I assume you have a way of picking unique filenames
-        filename = 'static/images/upload/some_image.jpeg'
-        with open(filename, 'wb') as f:
-            f.write(imgdata)
-
-        return redirect(url_for('index'))
-    if request.method == 'GET':
-        print('hoi')
-        return 'hoi'
 
 # ============================================================================== RECIPE
 @app.route('/recipe', methods=['GET', 'POST'])
@@ -183,6 +165,35 @@ def recipe():
                 return jsonify(message='Something went wrong during database operation', status='failed')
         else:
             return jsonify(message='Please provide json request', status='failed')
+
+
+@app.route('/recipe/user/<user_id>')
+def get_user_recipes(user_id):
+    if user_id.isdigit():
+        recipes = get_recipes(user_id)
+        return jsonify(recipes)
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/recipe/user', methods=['GET'])
+def redirect_to_user_recipes():
+    return redirect(url_for('get_user_recipes', user_id=session['user_id']))
+
+# ============================================================================== USER
+@app.route('/user/<user_id>', methods=['GET'])
+def get_user_info(user_id):
+    if user_id.isdigit():
+        user_info = get_user_data(user_id)
+        return jsonify(user_info)
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/user', methods=['GET'])
+def redirect_to_user_info():
+    return redirect(url_for('get_user_info', user_id=session['user_id']))
+
 
 # ============================================================================== NOT FOUND
 @app.errorhandler(404)

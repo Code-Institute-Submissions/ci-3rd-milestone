@@ -1,4 +1,9 @@
+// RENDER TEMPLATES
 const testTemplate = require('../../templates/handlebars/test.hbs');
+const dashboardRecipeTemplate = require('../../templates/handlebars/dashboard-recipes.hbs');
+const dashboardUserTemplate = require('../../templates/handlebars/dashboard-personal.hbs');
+
+// JAVASCRIPT MODULES
 const Croppie = require('croppie');
 
 
@@ -252,7 +257,7 @@ const addRecipe = btn => {
                                 </div>`);
 
             // Send response to sercer
-            fetch('http://citest.eu.ngrok.io/recipe', {
+            fetch(window.location.origin + '/recipe', {
                 method: 'POST',
                 body: JSON.stringify(formParams),
                 headers: {
@@ -286,12 +291,53 @@ function myTest() {
 }
 
 
+// ----------------------------------------------------------------------------- GET USER RECIPES
+const getUserRecipes = () => {
+    // Get all recipe data from user
+    fetch(window.location.origin + '/recipe/user', {
+        method: 'GET',
+        redirect: 'follow'
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+        // Render template
+        const htmlString = dashboardRecipeTemplate(resObj);
+
+        // Edit html DOM
+        $('#recipe-loader').remove();
+        $('#recipe-container').append(htmlString);
+    })
+
+}
+
+// ----------------------------------------------------------------------------- GET USER DATA
+const getUserData = () => {
+    // Get all recipe data from user
+    fetch(window.location.origin + '/user', {
+        method: 'GET',
+        redirect: 'follow'
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+        // Render template
+        const htmlString = dashboardUserTemplate(resObj);
+
+        // Edit html DOM
+        $('#user-loader').remove();
+        $('#user-container').append(htmlString);
+    })
+
+}
+
 // ----------------------------------------------------------------------------- EXPORTS
 module.exports = {
     signupUser: signupUser,
     logInUser: logInUser,
     addRecipe: addRecipe,
-    myTest: myTest
+    getUserRecipes: getUserRecipes,
+    getUserData: getUserData
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy
