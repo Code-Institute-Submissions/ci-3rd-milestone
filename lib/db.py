@@ -254,3 +254,58 @@ def get_user_data(user_id):
         return False
     finally:
         connection.close()
+
+
+'''
+This function updates personal user profile picture path
+
+'''
+
+
+def update_user_image_path(image_path, user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'UPDATE `users` SET `image_path`=%s WHERE `id`=%s'
+
+            # Execute command
+            cursor.execute(sql, (image_path, user_id))
+
+            # Get all results
+            connection.commit()
+
+            return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function updates personal user data
+
+'''
+
+
+def update_user_data(user_data, user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'UPDATE `users` SET `firstname`=%s, `lastname`=%s, `email`=%s WHERE `id`=%s'
+
+            # Execute command
+            cursor.execute(
+                sql, (user_data['firstname'], user_data['lastname'], user_data['email'], user_id))
+
+            # Get all results
+            connection.commit()
+
+            return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()

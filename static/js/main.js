@@ -23,13 +23,15 @@ $('.croppie-file-input').on('change', event => {
 
         // Function: start croppie object and bind image to div
         reader.onloadend = function () {
-            croppieObject = $('#croppie').croppie({
-                viewport: {
-                    width: 210,
-                    height: 280
-                },
-                boundary: { width: 300, height: 300 },
-            });
+            if (!croppieObject) {
+                croppieObject = $('#croppie').croppie({
+                    viewport: {
+                        width: 210,
+                        height: 280
+                    },
+                    boundary: { width: 300, height: 300 },
+                });
+            }
             croppieObject.croppie('bind', {
                 url: this.result
             });
@@ -39,23 +41,68 @@ $('.croppie-file-input').on('change', event => {
     }
 });
 
-$('.my-button').on('click', function () {
+$('.croppie-file-input-modal').on('change', event => {
+    if ($('.croppie-file-input-modal')[0].files[0]) {
+        console.log('Image found in input field');
+
+        const fileupload = $('.croppie-file-input-modal')[0].files[0];
+        const reader = new FileReader();
+
+        // Read data in reader object
+        reader.readAsDataURL(fileupload);
+
+        // Function: start croppie object and bind image to div
+        reader.onloadend = function () {
+            if (!croppieObject) {
+                croppieObject = $('#croppie').croppie({
+                    viewport: {
+                        width: 250,
+                        height: 250
+                    },
+                    boundary: { width: 300, height: 300 },
+                });
+            }
+            croppieObject.croppie('bind', {
+                url: this.result
+            });
+        }
+    } else {
+        console.log('No file found in input field');
+    }
+});
+
+$('#crop-profile-picture').on('click', function () {
     if (croppieObject) {
+        console.log('Cropping image');
         croppieObject.croppie('result', {
             type: 'base64',
             format: 'jpg',
-            size: { width: 300, height: 400 }
+            size: { width: 300, height: 300 }
         }).then(resp => {
-            $('.my-image').attr('src', resp);
+            $('.profile-img').attr('src', resp);
 
             // Send response to sercer
-            fetch('/image', {
+            fetch('/user/image', {
                 method: 'POST',
-                body: JSON.stringify({ data: resp.split(',')[1] }),
+                body: JSON.stringify({
+                    image_base64: resp.split(',')[1],
+                    old_image_path: TE.userData.image_path
+                }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }).then(res => console.log(res))
+            }).then(res => {
+                console.log(res)
+                return res.json();
+            }).then(resObj => {
+                console.log(resObj);
+                if (resObj.status == 'ok') {
+                    TE.userData.image_path = resObj.new_image_path;
+                    M.toast({ html: 'Successfully updated!', classes: 'light-green darken-1' });
+                } else if (resObj.status == 'failed') {
+                    M.toast({ html: 'Something went wrong', classes: 'red darken-1' });
+                }
+            })
         })
     } else {
         console.log('No croppie object found');
@@ -322,11 +369,57 @@ const getUserData = () => {
         return res.json()
     }).then(resObj => {
         // Render template
+        TE.userData = resObj;
+
+        // Set form fields
+        $('#modal-details-update').find('[name=firstname]').attr('value', resObj.firstname);
+        $('#modal-details-update').find('[name=lastname]').attr('value', resObj.lastname);
+        $('#modal-details-update').find('[name=email]').attr('value', resObj.email);
+        M.updateTextFields();
+
+        // Get html template
         const htmlString = dashboardUserTemplate(resObj);
 
         // Edit html DOM
         $('#user-loader').remove();
         $('#user-container').append(htmlString);
+    })
+
+}
+
+// ----------------------------------------------------------------------------- GET USER RECIPES
+const updateUserData = () => {
+    const formParams = {
+        firstname: $('#modal-details-update').find('[name=firstname]')[0].value,
+        lastname: $('#modal-details-update').find('[name=lastname]')[0].value,
+        email: $('#modal-details-update').find('[name=email]')[0].value
+    }
+
+    // Update user data in browers
+    TE.userData.firstname = formParams.firstname;
+    TE.userData.lastname = formParams.lastname;
+    TE.userData.email = formParams.email;
+
+    const htmlString = dashboardUserTemplate(TE.userData);
+
+    // Edit html DOM
+    $('#user-container').children().last().remove()
+    $('#user-container').append(htmlString);
+
+    // Get all recipe data from user
+    fetch(window.location.origin + '/user', {
+        method: 'POST',
+        body: JSON.stringify(formParams),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+
+        // Render template
+        console.log(resObj)
     })
 
 }
@@ -337,7 +430,8 @@ module.exports = {
     logInUser: logInUser,
     addRecipe: addRecipe,
     getUserRecipes: getUserRecipes,
-    getUserData: getUserData
+    getUserData: getUserData,
+    updateUserData: updateUserData
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy

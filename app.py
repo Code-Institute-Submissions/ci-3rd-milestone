@@ -4,7 +4,7 @@ import hashlib
 import base64
 import datetime
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
-from lib.db import new_connection, initialize_db, create_recipe, get_recipes, get_user_data
+from lib.db import new_connection, initialize_db, create_recipe, get_recipes, get_user_data, update_user_image_path, update_user_data
 from lib.scripts import user_logged_in
 
 # Initialize Flask
@@ -185,15 +185,70 @@ def redirect_to_user_recipes():
 def get_user_info(user_id):
     if user_id.isdigit():
         user_info = get_user_data(user_id)
+
+        # Check for profile photo
+        if user_info['image_path'] is None:
+            user_info['image_path'] = url_for(
+                'static', filename='images/placeholder.png')
+
         return jsonify(user_info)
     else:
         return redirect(url_for('index'))
 
 
-@app.route('/user', methods=['GET'])
+@app.route('/user', methods=['GET', 'POST'])
 def redirect_to_user_info():
-    return redirect(url_for('get_user_info', user_id=session['user_id']))
+    if request.method == 'GET':
+        return redirect(url_for('get_user_info', user_id=session['user_id']))
+    elif request.method == 'POST':
+        if request.is_json:
+            user_data = request.get_json()
 
+            # Update user image
+            db_operation = update_user_data(
+                user_data, session['user_id'])
+
+            if db_operation:
+                return jsonify(message='Successfully updated in database', status='ok')
+            else:
+                return jsonify(message='Something went wrong during database operation', status='failed')
+        else:
+            return jsonify(message='Please provide json request', status='failed')
+
+
+@app.route('/user/image', methods=['POST'])
+def update_user_image():
+    if session['user_id'] is not None:
+        if request.is_json:
+            image_data = request.get_json()
+            date_string = datetime.datetime.now().strftime('%c')
+            unique_hash = hashlib.md5(date_string.encode())
+
+            # Get and process image data
+            img_data = base64.b64decode(image_data['image_base64'])
+            image_path = 'static/images/upload/profile-picture-user-' + \
+                str(session['user_id']) + '-' + \
+                unique_hash.hexdigest() + '.jpg'
+            with open(image_path, 'wb') as f:
+                f.write(img_data)
+
+            # Update user image
+            db_operation = update_user_image_path(
+                image_path, session['user_id'])
+
+            if db_operation:
+                # remove old image
+                try:
+                    os.remove(image_data['old_image_path'])
+                except Exception as err:
+                    print(err)
+
+                return jsonify(message='Successfully updated in database', status='ok', new_image_path=image_path)
+            else:
+                return jsonify(message='Something went wrong during database operation', status='failed')
+
+    else:
+        return jsonify(message='No user found', status='failed')
 
 # ============================================================================== NOT FOUND
 @app.errorhandler(404)

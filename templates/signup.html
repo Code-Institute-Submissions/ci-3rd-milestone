@@ -37,7 +37,7 @@
             </div>
             <div class="row">
                 <div class="col s4">
-                    <button class="btn waves-effect waves-light deep-orange darken-1"
+                    <button id="signup-button" class="btn waves-effect waves-light deep-orange darken-1"
                         onclick="TE.signupUser(this)">Signup
                         <i class="material-icons right">send</i>
                     </button>
@@ -71,4 +71,17 @@
                 password!</em></p>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    window.addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) { // 13 is enter
+            console.log('Sign up user')
+            TE.logInUser($('#signup-button')[0]);
+        }
+    });
+
+</script>
 {% endblock %}

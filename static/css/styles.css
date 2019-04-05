@@ -204,6 +204,14 @@ nav {
     position: relative;
 }
 
+.croppie-container-modal {
+    position: relative;
+    height: 300px;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 50px;
+}
+
 .side-note p {
     font-weight: 100;
     font-size: 28px;
@@ -229,10 +237,37 @@ nav {
     display: none;
 }
 
-.upload-img {
+.croppie-file-input-modal {
+}
+
+.profile-picture-modal {
+    max-width: 500px;
+}
+
+.upload-img,
+.profile-img {
     display: inline-block;
 }
 
+.profile-img {
+    cursor: pointer;
+}
+
+
 .recipe-image {
     height: 200px;
+}
+
+.personal-text {
+    font-weight: 200;
+}
+
+.edit-details {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+}
+
+#user-container {
+    position: relative;
 }

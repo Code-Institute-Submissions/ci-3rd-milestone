@@ -1,8 +1,26 @@
 <div class="row">
-  <div class="col s6"><strong>First name</strong> {{firstname}}</div>
-  <div class="col s6"><strong>Email</strong> {{email}}</div>
+  <div class="col s12 m5">
+    <a href="#modal-image-upload" class="modal-trigger">
+      <img class="responsive-img profile-img" width="250" src="{{image_path}}">
+    </a>
+  </div>
+  <div class="col s12 m7">
+    <div class="row">
+      <div class="col s4"><strong>First name</strong> </div>
+      <div class="col s8 personal-text">{{firstname}}</div>
+    </div>
+    <div class="row">
+      <div class="col s4"><strong>Last name</strong> </div>
+      <div class="col s8 personal-text">{{lastname}}</div>
+    </div>
+    <div class="row">
+      <div class="col s4"><strong>Email</strong> </div>
+      <div class="col s8 personal-text">{{email}}</div>
+    </div>
+    <div class="edit-details">
+      <a href="#modal-details-update" id="crop-profile-picture"
+        class="modal-trigger waves-effect waves-green btn-flat">Edit Details</a>
+    </div>
+  </div>
 </div>
-<div class="row">
-  <div class="col s6"><strong>Last name</strong> {{lastname}}</div>
-  <div class="col s6"></div>
 </div>
