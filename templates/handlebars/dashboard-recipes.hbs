@@ -1,21 +1,44 @@
-{{#each this}}
-<div class="row">
-  <div class="col s12 m10">
-    <div class="card horizontal">
-      <div class="card-image">
-        <img src="{{image_path}}" class="recipe-image">
-      </div>
-      <div class="card-stacked">
-        <div class="card-content">
-          <p><strong>{{title}}</strong></p>
-          <p>{{description}}</p>
+<div class="row recipe-pagination">
+  <div class="col s12">
+    <ul class="pagination center-align">
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+      {{#each pages}}
+      {{#if active}}
+      <li class="active deep-orange darken-1"><a href="#">{{index}}</a></li>
+      {{else}}
+      <li class="waves-effect"><a href="#/" onclick="TE.getUserRecipes({{index}})">{{index}}</a></li>
+      {{/if}}
+      {{/each}}
+      <li class="waves-effect"><a href="#/"><i class="material-icons">chevron_right</i></a></li>
+    </ul>
+  </div>
+</div>
+<div class="recipe-card-container">
+  {{#each recipes}}
+  <div class="row">
+    <div class="col s12">
+      <div class="card horizontal">
+        <div class="card-image">
+          <img src="{{image_path}}" class="recipe-image">
         </div>
-        <div class="card-action">
-          <a href="#">View</a>
-          <a href="#">Edit</a>
+        <div class="card-stacked">
+          <div class="card-content">
+            <p class="title"><strong>{{title}}</strong></p>
+            <p class="date"><strong>{{date}}</strong></p>
+            <p class="description">{{description}}</p>
+          </div>
+          <div class="card-action">
+            <a href="/recipe/{{id}}">View</a>
+            <a href="#">Edit</a>
+          </div>
+          <div class="delete-action">
+            <a href="#" onclick="TE.deleteRecipe({{id}})">
+              <i class="material-icons grey-text">delete</i>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  {{/each}}
 </div>
-{{/each}}

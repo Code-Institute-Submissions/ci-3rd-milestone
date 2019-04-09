@@ -25,6 +25,7 @@ nav {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
+    background-size: cover;
 }
 
 .opaque-overlay {
@@ -113,9 +114,9 @@ nav {
 .loader {
     position: relative;
     display: block;
-    width:100px;
-    height: 100px;
-    border: 3px solid transparent;
+    width:40px;
+    height: 40px;
+    border: 1px solid transparent;
     border-top-color: #ff5722;
     border-radius: 50%;
     -webkit-animation: spin 1.5s linear infinite;
@@ -129,7 +130,7 @@ nav {
     left: 5px;
     right: 5px;
     bottom: 5px;
-    border: 3px solid transparent;
+    border: 1px solid transparent;
     border-top-color: #ff7043;
     border-radius: 50%;
     -webkit-animation: spin 2.5s linear infinite;
@@ -139,11 +140,11 @@ nav {
 .loader:after {
     content: "";
     position: absolute;
-    top: 13px;
-    left: 13px;
-    right: 13px;
-    bottom: 13px;
-    border: 3px solid transparent;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid transparent;
     border-top-color: #ff8a65 ;
     border-radius: 50%;
     -webkit-animation: spin 3.5s linear infinite;
@@ -187,6 +188,24 @@ nav {
 
 .dashboard-card h5 {
     color: #f4511e
+}
+
+.card-content > .title {
+    font-size: 1.3rem;
+}
+
+.card-content > .date {
+    font-size: 0.8rem;
+    margin-bottom: 0.8rem !important;
+    color: #f4511e;
+}
+
+.card-content > .description {
+    font-size: 0.9rem;
+}
+
+.card-action {
+    font-size: 0.8rem;
 }
 
 .title {
@@ -271,3 +290,48 @@ nav {
 #user-container {
     position: relative;
 }
+
+.recipe-container {
+    margin-top: 3px;
+    padding: 3rem;
+}
+
+.ruler {
+    height: 0.15rem;
+    background-color: #868686;
+    width: 200px;
+    margin: 0 auto 3rem;
+}
+
+.delete-action {
+    position: absolute;
+    top: 10px; 
+    right: 10px;
+}
+
+.delete-action  i {
+    padding: 5px
+}
+
+.delete-action i:hover {
+    background-color: #e0e0e0;
+}
+
+.recipe-card-container {
+    position: relative;
+    padding: 20px;
+}
+
+.card-container-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 5000;
+    background-color: rgba(255,255,255,0.7)
+}
+    

@@ -1,71 +1,59 @@
 {% extends "base.html" %}
 
-<!-- Add croppie css -->
-{% block css_style %}
-<link rel="stylesheet" href="{{ url_for('static',filename='css/croppie.css') }}">
-{% endblock %}
 
 <!-- Page content block -->
 {% block content %}
-<div class="container">
+<div class="container white recipe-container">
   <div class="row">
-    <div class="col s12 title">
-      <h3>New Recipe</h3>
+    <div class="col s12 m9 title">
+      <h3>{{title}}</h3>
+    </div>
+    <div class="col s12 m3 title">
+      <a href="#!" class="waves-effect waves-yellow btn-flat" onclick="atob">edit</a>
+      <a href="#!" class="red-text waves-effect waves-red btn-flat" onclick="TE.deleteRecipe({{ id }})">delete</a>
     </div>
   </div>
-  <div class="row valign-wrapper">
-    <div class=" col m12 l7">
-      <div class="row">
-        <div class="col s12 croppie-container">
-          <label class="label-file-input">
-            <img class="materialboxed responsive-img upload-img" width="300"
-              src="{{ url_for('static',filename='images/placeholder.png') }}">
-            <div id="croppie"></div>
-            <input type="file" class="croppie-file-input" accept="image/*">
-          </label>
-        </div>
-      </div>
-      <div class="row" style="margin-top:100px">
-        <div class="input-field col s12">
-          <input id="title" type="text" name="title">
-          <label for="title">Title</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <textarea id="textarea1" class="materialize-textarea" data-length="250" name="description"></textarea>
-          <label for="textarea1">Description</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <textarea id="textarea2" class="materialize-textarea" data-length="500" name="recipe"></textarea>
-          <label for="textarea2">Recipe</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col s12">
-          <button class="btn waves-effect waves-light btn deep-orange darken-1" type="submit" name="action"
-            onclick="TE.addRecipe(this)">Submit
-            <i class="material-icons right">send</i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="col l5 hide-on-med-and-down side-note left-border">
-      <p>Here you can add your new recipes. <br><br>Please choose a nice title that will attract users.<br><br> You can
-        also
-        add a description of the recipe and ofcourse the recipe itself.</p>
-    </div>
-  </div>
-</div>
-{% endblock %}
 
-<!-- Custom script block -->
-{% block script %}
-<script>
-  $(document).ready(function () {
-    $('textarea#textarea1, textarea#textarea2').characterCounter();
-  });
-</script>
+  <div class="row">
+    <div class="col m12 l5">
+      <img class="responsive-img" width="300" height="400" src="/{{ image_path }}">
+    </div>
+    <div class="col m12 l7">
+      <div class="row">
+        <div class="col s12 m2"><strong>Author</strong></div>
+        <div class="col s12 m10">{{firstname}} {{lastname}}</div>
+      </div>
+      <div class="row">
+        <div class="col s12 m2"><strong>Date</strong></div>
+        <div class="col s12 m10">{{date}}</div>
+      </div>
+      <div class="row">
+        <div class="col s12 m2"><strong>Views</strong></div>
+        <div class="col s12 m10">{{views}}</div>
+      </div>
+      <div class="row">
+        <div class="col s12 m2"><strong>Rating</strong></div>
+        <div class="col s12 m10">-</div>
+      </div>
+      <div class="row" style="margin-top:3rem">
+        <div class="col s12"><strong>Description</strong></div>
+        <div class="col s12">{{description}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 3rem;">
+    <div class="col s12"><strong>Recipe</strong></div>
+    <div class="col s12">{{recipe}}</div>
+  </div>
+  <div class="row">
+    <div class="col s12">
+      <h5 class="center-align">Comments</h5>
+    </div>
+  </div>
+  <div class="row">
+    <div class="ruler"></div>
+  </div>
+
+
+</div>
 {% endblock %}

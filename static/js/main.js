@@ -3,6 +3,7 @@ const testTemplate = require('../../templates/handlebars/test.hbs');
 const dashboardRecipeTemplate = require('../../templates/handlebars/dashboard-recipes.hbs');
 const dashboardUserTemplate = require('../../templates/handlebars/dashboard-personal.hbs');
 
+
 // JAVASCRIPT MODULES
 const Croppie = require('croppie');
 
@@ -339,9 +340,31 @@ function myTest() {
 
 
 // ----------------------------------------------------------------------------- GET USER RECIPES
-const getUserRecipes = () => {
+const getUserRecipes = page => {
+    let initialize;
+    if (!page) {
+        page = 1;
+        initialize = true;
+    }
+
+    // Add loading container
+    if (!initialize) {
+        // Remove active class pagination
+        $('.recipe-pagination').find('li').removeClass('active deep-orange darken-1')
+
+        // Add classes to new pagination 
+        const newPageIcon = $('.recipe-pagination').find('li')[page];
+        $(newPageIcon).addClass('active deep-orange darken-1');
+
+        // Add loader screen
+        $('.recipe-card-container')
+            .append(`<div class="card-container-loader">
+                    <div class="loader"></div>
+                </div>`)
+    }
+
     // Get all recipe data from user
-    fetch(window.location.origin + '/recipe/user', {
+    fetch(window.location.origin + '/recipe/user?page=' + page, {
         method: 'GET',
         redirect: 'follow'
     }).then(res => {
@@ -351,12 +374,20 @@ const getUserRecipes = () => {
         // Render template
         const htmlString = dashboardRecipeTemplate(resObj);
 
-        // Edit html DOM
-        $('#recipe-loader').remove();
+        // Remove elements
+        if (initialize) {
+            // Edit html DOM
+            $('#recipe-loader').remove();
+        } else {
+            $('.recipe-pagination').remove();
+            $('.recipe-card-container').remove();
+        }
+
+        // Add new html
         $('#recipe-container').append(htmlString);
     })
-
 }
+
 
 // ----------------------------------------------------------------------------- GET USER DATA
 const getUserData = () => {
@@ -387,7 +418,7 @@ const getUserData = () => {
 
 }
 
-// ----------------------------------------------------------------------------- GET USER RECIPES
+// ----------------------------------------------------------------------------- UPDATE USER DATA
 const updateUserData = () => {
     const formParams = {
         firstname: $('#modal-details-update').find('[name=firstname]')[0].value,
@@ -424,6 +455,25 @@ const updateUserData = () => {
 
 }
 
+// ----------------------------------------------------------------------------- DELETE USER RECIPES
+const deleteRecipe = recipeId => {
+    var anwser = confirm('Are you sure you want to delete this recipe?');
+
+    if (anwser) {
+        // Get all recipe data from user
+        fetch(window.location.origin + '/recipe/' + recipeId, {
+            method: 'DELETE'
+        }).then(res => {
+            // Get json object
+            return res.json()
+        }).then(resObj => {
+            // Render template
+            console.log(resObj)
+        })
+    }
+
+}
+
 // ----------------------------------------------------------------------------- EXPORTS
 module.exports = {
     signupUser: signupUser,
@@ -431,7 +481,8 @@ module.exports = {
     addRecipe: addRecipe,
     getUserRecipes: getUserRecipes,
     getUserData: getUserData,
-    updateUserData: updateUserData
+    updateUserData: updateUserData,
+    deleteRecipe: deleteRecipe
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy

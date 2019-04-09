@@ -209,19 +209,57 @@ This function gets all recipes from a specific user
 '''
 
 
-def get_recipes(user_id):
+def get_user_recipes(user_id, results_per_page, page):
+    # Determine start
+    start_results = results_per_page * (int(page) - 1)
+
     connection = new_connection()
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql = '''SELECT `title`, `description`, `recipe`, `views`, `image_path` 
-                    FROM `recipes` WHERE `user_id`=%s'''
+            sql = '''
+                SELECT 
+                    `title`, `description`, `recipe`, `views`, `image_path`, `id`, `date_created`
+                FROM `recipes` 
+                WHERE `user_id`=%s
+                ORDER BY date_created DESC
+                LIMIT %s, %s
+                '''
 
             # Execute command
-            cursor.execute(sql, (user_id))
+            cursor.execute(sql, (user_id, start_results, results_per_page))
 
             # Get all results
             result = cursor.fetchall()
+            return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function counts all recipes from a specific user
+
+'''
+
+
+def count_user_recipes(user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            sql = '''
+                SELECT COUNT(*) FROM `recipes` 
+                WHERE `user_id`=%s
+                '''
+
+            # Execute command
+            cursor.execute(sql, user_id)
+
+            # Get all results
+            result = cursor.fetchone()
             return result
     except Exception as err:
         print(err)
@@ -241,7 +279,7 @@ def get_user_data(user_id):
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql = 'SELECT `firstname`, `lastname`, `email`, `image_path` FROM `users` WHERE `id`=%s'
+            sql = 'SELECT `id`, `firstname`, `lastname`, `email`, `image_path` FROM `users` WHERE `id`=%s'
 
             # Execute command
             cursor.execute(sql, (user_id))
@@ -299,6 +337,71 @@ def update_user_data(user_data, user_id):
             # Execute command
             cursor.execute(
                 sql, (user_data['firstname'], user_data['lastname'], user_data['email'], user_id))
+
+            # Get all results
+            connection.commit()
+
+            return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets all recipe data for viewing the recipe page
+
+'''
+
+
+def get_recipe_data(recipe_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+            SELECT 
+                recipes.user_id AS user_id, recipes.title AS title, 
+                recipes.description AS description, recipes.recipe AS recipe,
+                recipes.views AS views, recipes.image_path AS image_path, 
+                recipes.date_created AS date_created, users.firstname AS firstname,
+                users.lastname AS lastname 
+            FROM `recipes`
+            INNER JOIN `users` ON recipes.user_id=users.id
+            WHERE recipes.id = %s'''
+
+            # Execute command
+            cursor.execute(
+                sql, recipe_id)
+
+            # Get all results
+            result = cursor.fetchone()
+
+            return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function deletes a recipe
+
+'''
+
+
+def delete_recipe(recipe_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'DELETE FROM `recipes` WHERE `id`=%s'
+
+            # Execute command
+            cursor.execute(
+                sql, recipe_id)
 
             # Get all results
             connection.commit()

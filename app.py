@@ -3,9 +3,12 @@ import pymysql
 import hashlib
 import base64
 import datetime
-from flask import Flask, render_template, request, session, redirect, url_for, jsonify
-from lib.db import new_connection, initialize_db, create_recipe, get_recipes, get_user_data, update_user_image_path, update_user_data
-from lib.scripts import user_logged_in
+import math
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify, abort
+from lib.scripts import user_logged_in, convert_datetime
+from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
+    update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes
+
 
 # Initialize Flask
 app = Flask(__name__)
@@ -140,7 +143,7 @@ def dashboard():
 @app.route('/recipe', methods=['GET', 'POST'])
 def recipe():
     if request.method == 'GET':
-        return render_template('recipe.html', pageTitle='Add Recipe', navBar=True, logged_in=user_logged_in())
+        return render_template('new-recipe.html', pageTitle='Add Recipe', navBar=True, logged_in=user_logged_in())
     elif request.method == 'POST':
         if request.is_json:
             recipe_data = request.get_json()
@@ -149,7 +152,7 @@ def recipe():
             # Get and process image data
             img_data = base64.b64decode(recipe_data['image_base64'])
             image_path = 'static/images/upload/recipe-' + \
-                date_string.replace(' ', '-') + '.jpg'
+                date_string.replace(' ', '-').replace(':', '') + '.jpg'
             with open(image_path, 'wb') as f:
                 f.write(img_data)
 
@@ -168,19 +171,76 @@ def recipe():
 
 
 @app.route('/recipe/user/<user_id>')
-def get_user_recipes(user_id):
+def get_recipes(user_id):
     if user_id.isdigit():
-        recipes = get_recipes(user_id)
-        return jsonify(recipes)
+        # Get query params
+        try:
+            page = int(request.args.get('page'))
+        except:
+            return abort(404)
+
+        # Check if query params exists
+        if page is None:
+            page = 1
+
+        results_per_page = 3
+        recipes = get_user_recipes(user_id, results_per_page, page)
+        recipes = [convert_datetime(item) for item in recipes]
+        total_number = count_user_recipes(user_id)
+
+        # Construct response
+        page_range = math.ceil(total_number[0] / results_per_page)
+        response = {
+            'pages': [{'active': True if page == i+1 else False, 'index': i+1} for i in range(page_range)],
+            'recipes': recipes
+        }
+
+        return jsonify(response)
     else:
         return redirect(url_for('index'))
 
 
 @app.route('/recipe/user', methods=['GET'])
 def redirect_to_user_recipes():
-    return redirect(url_for('get_user_recipes', user_id=session['user_id']))
+    # Get query params
+    page = request.args.get('page')
+
+    # Check if query params exists
+    if page is None:
+        page = 1
+
+    # Redirect
+    return redirect(url_for('get_recipes', user_id=session['user_id']) + '?page=' + str(page))
+
+
+@app.route('/recipe/<recipe_id>', methods=['GET', 'PATCH', 'DELETE'])
+def get_recipe_page(recipe_id):
+    if recipe_id.isdigit():
+        if request.method == 'GET':
+            # Get recipe data
+            result = get_recipe_data(recipe_id)
+            if result is None:
+                return abort(404)
+            return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
+                                   title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
+                                   image_path=result['image_path'], date=result['date_created'].strftime(
+                '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], id=recipe_id)
+
+        elif request.method == 'DELETE':
+            # Delete recipe
+            db_operation = delete_recipe(recipe_id)
+
+            # Check if operation was successfull
+            if db_operation:
+                return jsonify(message='Recipe successfully deleted!', status='ok')
+            else:
+                return jsonify(message='Something went wrong during database operation', status='failed')
+    else:
+        return abort(404)
+
 
 # ============================================================================== USER
+
 @app.route('/user/<user_id>', methods=['GET'])
 def get_user_info(user_id):
     if user_id.isdigit():
@@ -253,7 +313,7 @@ def update_user_image():
 # ============================================================================== NOT FOUND
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('not_found.html', pageTitle='Not Found', navBar=True, logged_in=user_logged_in()), 404
+    return render_template('not-found.html', pageTitle='Not Found', navBar=True, logged_in=user_logged_in()), 404
 
 
 # Run the webserver
