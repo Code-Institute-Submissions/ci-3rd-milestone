@@ -7,7 +7,8 @@ import math
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, abort
 from lib.scripts import user_logged_in, convert_datetime
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
-    update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes
+    update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
+    get_all_recipes
 
 
 # Initialize Flask
@@ -138,8 +139,23 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', pageTitle='My Dashboard', navBar=True, logged_in=user_logged_in())
 
+# ============================================================================== DRINKS
+@app.route('/drinks', methods=['GET'])
+def drinks():
+    return render_template('drinks.html', pageTitle='Drinks', navBar=True, logged_in=user_logged_in())
+
+
+@app.route('/drinks/recipes', methods=['GET'])
+def drinks_recipes():
+    # Fetch recipe data
+    results = get_all_recipes()
+    print(results)
+
+    return jsonify(results)
+
 
 # ============================================================================== RECIPE
+
 @app.route('/recipe', methods=['GET', 'POST'])
 def recipe():
     if request.method == 'GET':
@@ -192,9 +208,10 @@ def get_recipes(user_id):
         page_range = math.ceil(total_number[0] / results_per_page)
         response = {
             'pages': [{'active': True if page == i+1 else False, 'index': i+1} for i in range(page_range)],
-            'recipes': recipes
+            'recipes': recipes,
+            'previous': page - 1 if page > 1 else False,
+            'next': page + 1 if page < page_range else False
         }
-
         return jsonify(response)
     else:
         return redirect(url_for('index'))

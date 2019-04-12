@@ -181,7 +181,7 @@ nav {
 .dashboard-card {
     background-color: white;
     /* height: 10rem; */
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+    /* box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2); */
     padding: 1.5rem;
     font-size: 16px;
 }
@@ -206,6 +206,10 @@ nav {
 
 .card-action {
     font-size: 0.8rem;
+}
+
+.card-action a {
+    color: #f4511e !important;
 }
 
 .title {
@@ -335,3 +339,28 @@ nav {
     background-color: rgba(255,255,255,0.7)
 }
     
+
+.drinks-container {
+    margin-top: 3rem;
+    background-color: white;
+}
+
+.filter-container {
+    border-right: 1px solid #ebeaea;
+    height: 100vh;
+}
+
+.recipes-page-container {
+    margin-left: 2rem;
+}
+
+.recipes-pagination {
+    height: 100px;
+}
+
+.recipes-page-wrapper {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

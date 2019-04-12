@@ -1,7 +1,12 @@
 <div class="row recipe-pagination">
   <div class="col s12">
     <ul class="pagination center-align">
-      <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+      {{#unless previous}}
+      <li class="disabled"><a href="#/"><i class="material-icons">chevron_left</i></a></li>
+      {{else}}
+      <li class="waves-effect"><a href="#/" onclick="TE.getUserRecipes({{previous}})"><i
+            class="material-icons">chevron_left</i></a></li>
+      {{/unless}}
       {{#each pages}}
       {{#if active}}
       <li class="active deep-orange darken-1"><a href="#">{{index}}</a></li>
@@ -9,7 +14,12 @@
       <li class="waves-effect"><a href="#/" onclick="TE.getUserRecipes({{index}})">{{index}}</a></li>
       {{/if}}
       {{/each}}
-      <li class="waves-effect"><a href="#/"><i class="material-icons">chevron_right</i></a></li>
+      {{#unless next}}
+      <li class="disabled"><a href="#/"><i class="material-icons">chevron_right</i></a></li>
+      {{else}}
+      <li class="waves-effect"><a href="#/" onclick="TE.getUserRecipes({{next}})"><i
+            class="material-icons">chevron_right</i></a></li>
+      {{/unless}}
     </ul>
   </div>
 </div>

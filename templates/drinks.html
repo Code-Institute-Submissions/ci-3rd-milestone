@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container drinks-container">
+  <div class="row" style="padding: 1.5rem">
+    <div class="col s3 filter-container">
+      <p>this is the filter area</p>
+    </div>
+    <div class="col s9">
+      <div class="recipes-page-container">
+        <div class="recipes-pagination">Pagination</div>
+        <div class="recipes-page-wrapper">
+
+          <!-- THIS IS THE SECTION WHERE THE RECIPES WILL BE SHOWN-->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  TE.getRecipes();
+</script>
+{% endblock %}

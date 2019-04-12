@@ -34,7 +34,7 @@
               src="{{ url_for('static',filename='images/logo-white.png') }}" {% endif %} class="logo"></a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="/" {% if navBar %} class="black-text" {% endif %}>Home</a></li>
-            <li><a href="/" {% if navBar %} class="black-text" {% endif %}>Drinks</a></li>
+            <li><a href="/drinks" {% if navBar %} class="black-text" {% endif %}>Drinks</a></li>
             <li><a href="/" {% if navBar %} class="black-text" {% endif %}>About</a></li>
             {% if logged_in %}
             <li><a href="/dashboard" {% if navBar %} class="black-text" {% endif %}>My Dashboard</a></li>

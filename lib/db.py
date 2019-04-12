@@ -13,6 +13,7 @@ def new_connection():
         user=os.environ['DB_USER_NAME'],
         password=os.environ['DB_PASSWORD'],
         db=os.environ['DB_NAME'],
+        charset='utf8',
         port=int(os.environ['DB_PORT']))
 
 
@@ -372,13 +373,44 @@ def get_recipe_data(recipe_id):
             WHERE recipes.id = %s'''
 
             # Execute command
-            cursor.execute(
-                sql, recipe_id)
+            cursor.execute(sql, recipe_id)
 
             # Get all results
             result = cursor.fetchone()
 
             return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets all recipe data for the drinks page
+
+'''
+
+
+def get_all_recipes():
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+            SELECT 
+                title, description, views, image_path, date_created
+            FROM `recipes`
+            ORDER BY date_created DESC
+            '''
+
+            # Execute command
+            cursor.execute(sql)
+
+            # Get all results
+            results = cursor.fetchall()
+
+            return results
     except Exception as err:
         print(err)
         return False

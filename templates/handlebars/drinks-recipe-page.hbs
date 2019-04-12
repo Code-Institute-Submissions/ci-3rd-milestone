@@ -1,0 +1,16 @@
+{{#each this}}
+<div class="card" style="margin:30px 0px">
+  <div class="card-image waves-effect waves-block waves-light">
+    <img class="activator" src="{{image_path}}">
+  </div>
+  <div class="card-content">
+    <span class="card-title activator grey-text text-darken-4">{{title}}<i
+        class="material-icons right">more_vert</i></span>
+    <p>Label 1 <br> Label 2</p>
+  </div>
+  <div class="card-reveal">
+    <span class="card-title grey-text text-darken-4">{{title}}<i class="material-icons right">close</i></span>
+    <p>{{description}}</p>
+  </div>
+</div>
+{{/each}}

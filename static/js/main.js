@@ -2,12 +2,11 @@
 const testTemplate = require('../../templates/handlebars/test.hbs');
 const dashboardRecipeTemplate = require('../../templates/handlebars/dashboard-recipes.hbs');
 const dashboardUserTemplate = require('../../templates/handlebars/dashboard-personal.hbs');
+const drinksRecipePage = require('../../templates/handlebars/drinks-recipe-page.hbs');
 
 
 // JAVASCRIPT MODULES
 const Croppie = require('croppie');
-
-
 
 
 // ----------------------------------------------------------------------------- CROPPIE LISTENERS
@@ -27,8 +26,8 @@ $('.croppie-file-input').on('change', event => {
             if (!croppieObject) {
                 croppieObject = $('#croppie').croppie({
                     viewport: {
-                        width: 210,
-                        height: 280
+                        width: 180,
+                        height: 240
                     },
                     boundary: { width: 300, height: 300 },
                 });
@@ -471,6 +470,23 @@ const deleteRecipe = recipeId => {
             console.log(resObj)
         })
     }
+}
+
+// ----------------------------------------------------------------------------- GET RECIPES 
+const getRecipes = () => {
+
+    // Get all recipe data from user
+    fetch(window.location.origin + '/drinks/recipes', {
+        method: 'GET'
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+        // Render template
+        const htmlString = drinksRecipePage(resObj);
+        $('.recipes-page-wrapper').append(htmlString);
+        console.log(htmlString)
+    })
 
 }
 
@@ -482,7 +498,8 @@ module.exports = {
     getUserRecipes: getUserRecipes,
     getUserData: getUserData,
     updateUserData: updateUserData,
-    deleteRecipe: deleteRecipe
+    deleteRecipe: deleteRecipe,
+    getRecipes: getRecipes
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy
