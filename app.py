@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 from lib.scripts import user_logged_in, convert_datetime
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
-    get_all_recipes
+    get_all_recipes, count_all_recipes
 
 
 # Initialize Flask
@@ -147,11 +147,31 @@ def drinks():
 
 @app.route('/drinks/recipes', methods=['GET'])
 def drinks_recipes():
-    # Fetch recipe data
-    results = get_all_recipes()
-    print(results)
+    try:
+        page = int(request.args.get('page'))
+    except:
+        return abort(404)
 
-    return jsonify(results)
+    # Check if query params exists
+    if page is None:
+        page = 1
+
+    # Fetch recipe data
+    results_per_page = 8
+    recipes = get_all_recipes(results_per_page, page)
+    # recipes = [convert_datetime(item) for item in recipes]
+    total_number = count_all_recipes()
+
+    # Construct response
+    page_range = math.ceil(total_number[0] / results_per_page)
+    response = {
+        'pages': [{'active': True if page == i+1 else False, 'index': i+1} for i in range(page_range)],
+        'recipes': recipes,
+        'previous': page - 1 if page > 1 else False,
+        'next': page + 1 if page < page_range else False
+    }
+
+    return jsonify(response)
 
 
 # ============================================================================== RECIPE

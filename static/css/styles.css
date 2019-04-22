@@ -358,9 +358,33 @@ nav {
     height: 100px;
 }
 
+
+.items-page-card-link {
+    flex-basis: 45%;
+    margin: 1rem 0;
+}
+
+.items-page-card-link.disabled {
+    box-shadow: none;
+}
+
 .recipes-page-wrapper {
     display: flex;
     justify-content: space-around;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+.items-page-card {
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+}
+
+.items-page-card:hover {
+    background-color: #ff670021;
+    cursor: pointer;
+}
+
+.recipe-pagination {
+    flex-basis: 100%;
 }

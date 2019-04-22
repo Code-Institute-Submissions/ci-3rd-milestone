@@ -473,19 +473,56 @@ const deleteRecipe = recipeId => {
 }
 
 // ----------------------------------------------------------------------------- GET RECIPES 
-const getRecipes = () => {
+const getRecipes = page => {
+    let initialize;
+    if (!page) {
+        page = 1;
+        initialize = true;
+    }
+
+    // Add loading container
+    if (!initialize) {
+        // Remove active class pagination
+        $('.recipe-pagination').find('li').removeClass('active deep-orange darken-1')
+
+        // Add classes to new pagination 
+        const newPageIcon = $('.recipe-pagination').find('li')[page];
+        $(newPageIcon).addClass('active deep-orange darken-1');
+
+        // Add loader screen
+        $('.recipes-page-wrapper')
+            .append(`<div class="card-container-loader">
+                    <div class="loader"></div>
+                </div>`)
+    }
 
     // Get all recipe data from user
-    fetch(window.location.origin + '/drinks/recipes', {
+    fetch(window.location.origin + '/drinks/recipes?page=' + page, {
         method: 'GET'
     }).then(res => {
         // Get json object
         return res.json()
     }).then(resObj => {
+        console.log(resObj);
+        let recipes = resObj.recipes;
+
+        //Check if equal amount of items
+        let uneven = true;
+        if (Math.floor(recipes.length / 2) == recipes.length / 2) {
+            uneven = false;
+        }
+
+        resObj.uneven = uneven;
         // Render template
         const htmlString = drinksRecipePage(resObj);
-        $('.recipes-page-wrapper').append(htmlString);
-        console.log(htmlString)
+
+        if (!initialize) {
+            $('.recipe-pagination').remove();
+            $('.recipes-page-wrapper').remove();
+        }
+
+        $('.recipes-page-container').append(htmlString);
+
     })
 
 }

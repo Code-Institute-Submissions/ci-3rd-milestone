@@ -392,25 +392,57 @@ This function gets all recipe data for the drinks page
 '''
 
 
-def get_all_recipes():
+def get_all_recipes(results_per_page, page):
+    # Determine start
+    start_results = results_per_page * (int(page) - 1)
+
     connection = new_connection()
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
             SELECT 
-                title, description, views, image_path, date_created
+                id, title, description, views, image_path, date_created
             FROM `recipes`
             ORDER BY date_created DESC
+            LIMIT %s, %s
             '''
 
             # Execute command
-            cursor.execute(sql)
+            cursor.execute(sql, (start_results, results_per_page))
 
             # Get all results
             results = cursor.fetchall()
 
             return results
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function counts all recipes
+
+'''
+
+
+def count_all_recipes():
+    connection = new_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            sql = '''
+                SELECT COUNT(*) FROM `recipes` 
+                '''
+
+            # Execute command
+            cursor.execute(sql)
+
+            # Get all results
+            result = cursor.fetchone()
+            return result
     except Exception as err:
         print(err)
         return False
