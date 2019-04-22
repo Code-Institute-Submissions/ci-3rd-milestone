@@ -10,8 +10,11 @@ except:
 
 print('---> Setting DB environment variables')
 print('')
+# print(config)
 
 # Set environment variables
+if 'DB_HOST' not in os.environ and config is not None:
+    os.environ['DB_HOST'] = config['DB_HOST']
 if 'DB_USER_NAME' not in os.environ and config is not None:
     os.environ['DB_USER_NAME'] = config['DB_USER_NAME']
 if 'DB_PASSWORD' not in os.environ and config is not None:

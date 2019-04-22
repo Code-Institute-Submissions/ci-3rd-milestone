@@ -9,7 +9,7 @@ Gives a new database connection
 
 def new_connection():
     return pymysql.connect(
-        host='db4free.net',
+        host=os.environ['DB_HOST'],
         user=os.environ['DB_USER_NAME'],
         password=os.environ['DB_PASSWORD'],
         db=os.environ['DB_NAME'],
