@@ -52,12 +52,21 @@ def signup():
 
         try:
             with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-                sql = "INSERT INTO `users` (`firstname`, `lastname`, `email`, `password`) VALUES (%s, %s, %s, %s)"
+                sql = '''
+                        INSERT INTO `users` (`firstname`, `lastname`, `email`, `password`) VALUES (%s, %s, %s, %s)
+                    '''
                 cursor.execute(sql, (firstname, lastname,
                                      email, password_hash.hexdigest()))
 
-            # Commit the save actions
-            connection.commit()
+                # Commit the save actions
+                connection.commit()
+
+                # Get new user id
+                sql = 'SELECT LAST_INSERT_ID()'
+                cursor.execute(sql)
+                result = cursor.fetchone()
+                user_id = result['LAST_INSERT_ID()']
+
         except Exception as err:
             print(err)
             return jsonify(message='Failed to submit new user', status='failed')
@@ -67,6 +76,7 @@ def signup():
         # Set session variables
         session['email'] = email
         session['logged_in'] = True
+        session['user_id'] = user_id
 
         # Return json reponse
         return jsonify(message='Record saved!', status='ok')

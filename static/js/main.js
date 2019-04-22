@@ -323,20 +323,6 @@ const addRecipe = btn => {
 }
 
 
-function myTest() {
-    const data = [
-        {
-            name: 'hoi'
-        },
-        {
-            name: 'doei'
-        }
-    ]
-
-
-    console.log(testTemplate(data));
-}
-
 
 // ----------------------------------------------------------------------------- GET USER RECIPES
 const getUserRecipes = page => {
@@ -361,6 +347,8 @@ const getUserRecipes = page => {
                     <div class="loader"></div>
                 </div>`)
     }
+
+    TE.activeUserRecipePage = page;
 
     // Get all recipe data from user
     fetch(window.location.origin + '/recipe/user?page=' + page, {
@@ -468,6 +456,9 @@ const deleteRecipe = recipeId => {
         }).then(resObj => {
             // Render template
             console.log(resObj)
+            if (resObj.status == 'ok') {
+                getUserRecipes(TE.activeUserRecipePage);
+            }
         })
     }
 }
