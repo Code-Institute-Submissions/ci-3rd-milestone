@@ -1,5 +1,5 @@
 body {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 nav {
@@ -235,6 +235,15 @@ nav {
     margin-top: 50px;
 }
 
+.new-recipe-info-container {
+    background-color: white;
+    padding: 2rem !important;
+}
+
+.side-note {
+    margin: 3rem 0;
+}
+
 .side-note p {
     font-weight: 100;
     font-size: 28px;
@@ -387,4 +396,13 @@ nav {
 
 .recipe-pagination {
     flex-basis: 100%;
+}
+
+.recipe-line {
+    display: flex;
+    align-items: center;
+}
+
+.recipe-line i:hover {
+    cursor: pointer;
 }

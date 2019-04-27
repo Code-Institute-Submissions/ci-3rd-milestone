@@ -271,7 +271,7 @@ def get_recipe_page(recipe_id):
             return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
                                    title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
                                    image_path=result['image_path'], date=result['date_created'].strftime(
-                '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], id=recipe_id)
+                '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
 
         elif request.method == 'DELETE':
             # Delete recipe

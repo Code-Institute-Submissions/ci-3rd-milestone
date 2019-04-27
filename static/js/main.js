@@ -274,6 +274,16 @@ const addRecipe = btn => {
         image_base64: ""
     };
 
+    // Construct ingredients
+    let ingredientsList = "";
+    $('.recipe-line').each((index, element) => {
+        // Value from ingredient input
+        let ingredient = $(element).find('input')[0].value;
+        ingredientsList += '<ingredient>' + ingredient + '</ingredient>';
+    });
+    formParams.ingredients = ingredientsList;
+    console.log(formParams);
+
     // Check if file was uploaded
     if ($('.croppie-file-input')[0].files[0]) {
         console.log($('.croppie-file-input')[0].files[0])
@@ -283,7 +293,7 @@ const addRecipe = btn => {
     }
 
     // Check if values are not empty
-    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "") {
+    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "" || formParams.ingredients == "") {
         return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
     }
 
@@ -518,6 +528,39 @@ const getRecipes = page => {
 
 }
 
+// ----------------------------------------------------------------------------- ADD RECIPE LINE
+const addRecipeLine = element => {
+    // Get main recipe line element
+    const recipeLine = element.parentNode.parentNode;
+
+    // Insert new line
+    const htmlLine = `
+    <div class="row recipe-line" style="margin-bottom: 0">
+        <div class="input-field col s10">
+        <input id="last_name" type="text" class="validate" placeholder="Extra ingredient">
+        </div>
+        <div class="col s2"><i class="small material-icons deep-orange-text text-darken-1 right-align"
+            onclick="TE.addRecipeLine(this)">add_circle_outline</i>
+        </div>
+    </div>`;
+    $(recipeLine).after(htmlLine);
+
+    // Modify current element
+    element.innerText = 'remove_circle_outline';
+    $(element).removeClass('deep-orange-text text-darken-1');
+    $(element).addClass('grey-text');
+    $(element).attr("onclick", "TE.removeRecipeLine(this)");
+}
+
+// ----------------------------------------------------------------------------- REMOVE RECIPE LINE
+const removeRecipeLine = element => {
+    // Get main recipe line element
+    const recipeLine = element.parentNode.parentNode;
+
+    $(recipeLine).remove();
+}
+
+
 // ----------------------------------------------------------------------------- EXPORTS
 module.exports = {
     signupUser: signupUser,
@@ -527,7 +570,9 @@ module.exports = {
     getUserData: getUserData,
     updateUserData: updateUserData,
     deleteRecipe: deleteRecipe,
-    getRecipes: getRecipes
+    getRecipes: getRecipes,
+    addRecipeLine: addRecipeLine,
+    removeRecipeLine: removeRecipeLine
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy

@@ -45,6 +45,13 @@
     <div class="col s12"><strong>Recipe</strong></div>
     <div class="col s12">{{recipe}}</div>
   </div>
+  <div class="row" style="margin-top: 3rem;">
+    <div class="col s12"><strong>Ingredients</strong></div>
+    {% for ingredient in ingredients %}
+    <div class="col s12"><span>&mdash;&emsp;{{ ingredient}}</span></div>
+    {% endfor %}
+  </div>
+
   <div class="row">
     <div class="col s12">
       <h5 class="center-align">Comments</h5>

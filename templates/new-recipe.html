@@ -8,13 +8,13 @@
 <!-- Page content block -->
 {% block content %}
 <div class="container">
-  <div class="row">
-    <div class="col s12 title">
-      <h3>New Recipe</h3>
-    </div>
-  </div>
-  <div class="row valign-wrapper">
-    <div class=" col m12 l7">
+  <div class="row valign-wrapper" style="align-items:unset; margin-top:3rem">
+    <div class="col m12 l7 new-recipe-info-container">
+      <div class="row">
+        <div class="col s12 title">
+          <h3>New Recipe</h3>
+        </div>
+      </div>
       <div class="row">
         <div class="col s12 croppie-container">
           <label class="label-file-input">
@@ -25,22 +25,35 @@
           </label>
         </div>
       </div>
-      <div class="row" style="margin-top:100px">
+      <div class="row" style="margin-top:100px; margin-bottom: 0">
         <div class="input-field col s12">
           <input id="title" type="text" name="title">
           <label for="title">Title</label>
         </div>
       </div>
-      <div class="row">
+      <div class="row" style="margin-bottom: 0">
         <div class="input-field col s12">
           <textarea id="textarea1" class="materialize-textarea" data-length="250" name="description"></textarea>
           <label for="textarea1">Description</label>
         </div>
       </div>
-      <div class="row">
+      <div class="row" style="margin-bottom: 0">
         <div class="input-field col s12">
           <textarea id="textarea2" class="materialize-textarea" data-length="500" name="recipe"></textarea>
           <label for="textarea2">Recipe</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <h6>Ingredients</h6>
+        </div>
+      </div>
+      <div class="row recipe-line" style="margin-bottom: 0">
+        <div class="input-field col s10">
+          <input id="last_name" type="text" class="validate" placeholder="100 ml soda">
+        </div>
+        <div class="col s2"><i class="small material-icons deep-orange-text text-darken-1 right-align"
+            onclick="TE.addRecipeLine(this)">add_circle_outline</i>
         </div>
       </div>
       <div class="row">

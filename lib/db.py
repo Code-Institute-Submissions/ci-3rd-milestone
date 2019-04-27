@@ -63,6 +63,7 @@ def initialize_db():
                         `title` varchar(32) NOT NULL,
                         `description` varchar(256) NOT NULL,
                         `recipe` varchar(256) NOT NULL,
+                        `ingredients` varchar(256) NOT NULL,
                         `views` int DEFAULT 0,
                         `image_path` varchar(256),
                         `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -186,12 +187,12 @@ def create_recipe(recipe_data):
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql = '''INSERT INTO `recipes` (`user_id`, `title`, `description`, `recipe`, `image_path`)
-                    VALUES (%s, %s, %s, %s, %s)'''
+            sql = '''INSERT INTO `recipes` (`user_id`, `title`, `description`, `recipe`, `image_path`, `ingredients`)
+                    VALUES (%s, %s, %s, %s, %s, %s)'''
 
             # Execute query
             cursor.execute(sql, (recipe_data['user_id'], recipe_data['title'],
-                                 recipe_data['description'], recipe_data['recipe'], recipe_data['image_path']))
+                                 recipe_data['description'], recipe_data['recipe'], recipe_data['image_path'], recipe_data['ingredients']))
 
             # Commit to database
             connection.commit()
@@ -219,9 +220,9 @@ def get_user_recipes(user_id, results_per_page, page):
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
-                SELECT 
+                SELECT
                     `title`, `description`, `recipe`, `views`, `image_path`, `id`, `date_created`
-                FROM `recipes` 
+                FROM `recipes`
                 WHERE `user_id`=%s
                 ORDER BY date_created DESC
                 LIMIT %s, %s
@@ -252,7 +253,7 @@ def count_user_recipes(user_id):
     try:
         with connection.cursor() as cursor:
             sql = '''
-                SELECT COUNT(*) FROM `recipes` 
+                SELECT COUNT(*) FROM `recipes`
                 WHERE `user_id`=%s
                 '''
 
@@ -362,12 +363,12 @@ def get_recipe_data(recipe_id):
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
-            SELECT 
-                recipes.user_id AS user_id, recipes.title AS title, 
+            SELECT
+                recipes.user_id AS user_id, recipes.title AS title,
                 recipes.description AS description, recipes.recipe AS recipe,
-                recipes.views AS views, recipes.image_path AS image_path, 
-                recipes.date_created AS date_created, users.firstname AS firstname,
-                users.lastname AS lastname 
+                recipes.views AS views, recipes.image_path AS image_path,
+                recipes.date_created AS date_created, recipes.ingredients AS ingredients,
+                users.firstname AS firstname, users.lastname AS lastname
             FROM `recipes`
             INNER JOIN `users` ON recipes.user_id=users.id
             WHERE recipes.id = %s'''
@@ -377,6 +378,15 @@ def get_recipe_data(recipe_id):
 
             # Get all results
             result = cursor.fetchone()
+
+            # Process ingredients
+            ingredientSplit = result['ingredients'].split('</ingredient>')
+            del ingredientSplit[-1]
+            ingredients = [
+                item[item.find('<ingredient>')+len('<ingredient>'):] for item in ingredientSplit]
+
+            # Add ingredients to result
+            result['ingredients'] = ingredients
 
             return result
     except Exception as err:
@@ -401,7 +411,7 @@ def get_all_recipes(results_per_page, page):
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
-            SELECT 
+            SELECT
                 id, title, description, views, image_path, date_created
             FROM `recipes`
             ORDER BY date_created DESC
@@ -434,7 +444,7 @@ def count_all_recipes():
     try:
         with connection.cursor() as cursor:
             sql = '''
-                SELECT COUNT(*) FROM `recipes` 
+                SELECT COUNT(*) FROM `recipes`
                 '''
 
             # Execute command
