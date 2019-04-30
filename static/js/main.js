@@ -14,6 +14,7 @@ let croppieObject;
 $('.croppie-file-input').on('change', event => {
     if ($('.croppie-file-input')[0].files[0]) {
         console.log('Image found in input field');
+        $('.upload-img').attr('src', '/static/images/placeholder.png')
 
         const fileupload = $('.croppie-file-input')[0].files[0];
         const reader = new FileReader();
@@ -279,7 +280,9 @@ const addRecipe = btn => {
     $('.recipe-line').each((index, element) => {
         // Value from ingredient input
         let ingredient = $(element).find('input')[0].value;
-        ingredientsList += '<ingredient>' + ingredient + '</ingredient>';
+        if (ingredient != '') {
+            ingredientsList += '<in>' + ingredient + '</in>';
+        }
     });
     formParams.ingredients = ingredientsList;
     console.log(formParams);
@@ -332,6 +335,91 @@ const addRecipe = btn => {
     }
 }
 
+// ----------------------------------------------------------------------------- UPDATE RECIPE
+const updateRecipe = btn => {
+    const form = btn.parentNode.parentNode.parentNode;
+
+    // Get values from input fields
+    const formParams = {
+        title: form.querySelector('[name=title]').value,
+        description: form.querySelector('[name=description]').value,
+        recipe: form.querySelector('[name=recipe]').value,
+        image_name: "",
+        image_base64: ""
+    };
+
+    // Construct ingredients
+    let ingredientsList = "";
+    $('.recipe-line').each((index, element) => {
+        // Value from ingredient input
+        let ingredient = $(element).find('input')[0].value;
+        if (ingredient != '') {
+            ingredientsList += '<in>' + ingredient + '</in>';
+        }
+    });
+    formParams.ingredients = ingredientsList;
+    console.log(formParams);
+
+    // Check if file was uploaded
+    if ($('.croppie-file-input')[0].files[0]) {
+        // console.log($('.croppie-file-input')[0].files[0])
+        formParams.image_name = $('.croppie-file-input')[0].files[0].name;
+    }
+
+    // Check if values are not empty
+    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "" || formParams.ingredients == "") {
+        return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
+    }
+
+    // Check if croppie object exists
+    if (croppieObject) {
+        croppieObject.croppie('result', {
+            type: 'base64',
+            format: 'jpg',
+            size: { width: 300, height: 400 }
+        }).then(resp => {
+
+            // Add base64 image data
+            formParams.image_base64 = resp.split(',')[1];
+
+            // Send request
+            sendUpdateRequest();
+        });
+    } else {
+        sendUpdateRequest();
+    }
+
+    // Send update request to backend server
+    function sendUpdateRequest() {
+        // Open load bar
+        $('body').append(`<div class="loader-container">
+            <div class="loader"></div>
+        </div>`);
+
+        let urlIdIndex = window.location.pathname.lastIndexOf('/');
+        let recipeId = window.location.pathname.substring(urlIdIndex + 1);
+
+        // Send response to sercer
+        fetch(window.location.origin + '/recipe/' + recipeId, {
+            method: 'PATCH',
+            body: JSON.stringify(formParams),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            return res.json()
+        }).then(resData => {
+            console.log(resData);
+            if (resData.status === 'success') {
+                window.location = document.referrer;
+            }
+            else if (resData.status == 'failed') {
+                $('.loader-container').remove();
+                M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
+            }
+        })
+    }
+}
 
 
 // ----------------------------------------------------------------------------- GET USER RECIPES
@@ -566,6 +654,7 @@ module.exports = {
     signupUser: signupUser,
     logInUser: logInUser,
     addRecipe: addRecipe,
+    updateRecipe: updateRecipe,
     getUserRecipes: getUserRecipes,
     getUserData: getUserData,
     updateUserData: updateUserData,

@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 from lib.scripts import user_logged_in, convert_datetime
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
-    get_all_recipes, count_all_recipes
+    get_all_recipes, count_all_recipes, update_recipe
 
 
 # Initialize Flask
@@ -263,18 +263,38 @@ def redirect_to_user_recipes():
 @app.route('/recipe/<recipe_id>', methods=['GET', 'PATCH', 'DELETE'])
 def get_recipe_page(recipe_id):
     if recipe_id.isdigit():
+        # GET REQUEST
         if request.method == 'GET':
             # Get recipe data
             result = get_recipe_data(recipe_id)
             if result is None:
                 return abort(404)
-            return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
-                                   title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
-                                   image_path=result['image_path'], date=result['date_created'].strftime(
-                '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
 
+            # Get arguments from url to determine edit mode
+            editMode = request.args.get('edit')
+
+            # When in edit mode, return edit-recipe.html
+            if editMode == 'true':
+                return render_template('edit-recipe.html', pageTitle='Edit recipe', navBar=True, logged_in=user_logged_in(),
+                                       title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
+                                       image_path=result['image_path'], date=result['date_created'].strftime(
+                    '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
+            else:
+                return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
+                                       title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
+                                       image_path=result['image_path'], date=result['date_created'].strftime(
+                    '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
+
+        # DELETE REQUEST
         elif request.method == 'DELETE':
-            # Delete recipe
+            # Detele recipe image from server
+            recipe_data = get_recipe_data(recipe_id)
+            try:
+                os.remove(recipe_data['image_path'])
+            except Exception as err:
+                print(err)
+
+            # Delete recipe from database
             db_operation = delete_recipe(recipe_id)
 
             # Check if operation was successfull
@@ -282,6 +302,41 @@ def get_recipe_page(recipe_id):
                 return jsonify(message='Recipe successfully deleted!', status='ok')
             else:
                 return jsonify(message='Something went wrong during database operation', status='failed')
+
+        # PATCH REQUEST
+        elif request.method == 'PATCH':
+            if request.is_json:
+                # Get new and old recipe data
+                recipe_data = request.get_json()
+                old_recipe_data = get_recipe_data(recipe_id)
+
+                # Do following when image has been changed
+                if recipe_data['image_base64'] != '':
+                    date_string = datetime.datetime.now().strftime('%c')
+
+                    # Get and process image data
+                    img_data = base64.b64decode(recipe_data['image_base64'])
+                    image_path = 'static/images/upload/recipe-' + \
+                        date_string.replace(' ', '-').replace(':', '') + '.jpg'
+                    with open(image_path, 'wb') as f:
+                        f.write(img_data)
+
+                    recipe_data['image_path'] = image_path
+
+                    # remove old image
+                    try:
+                        os.remove(old_recipe_data['image_path'])
+                    except Exception as err:
+                        print(err)
+
+                # Update the recipe
+                db_operation = update_recipe(recipe_data, recipe_id)
+
+                if db_operation:
+                    return jsonify(message='Recipe successfully updated!', status='success')
+                else:
+                    return jsonify(message='Something went wrong during database operation', status='failed')
+
     else:
         return abort(404)
 

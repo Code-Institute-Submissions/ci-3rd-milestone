@@ -206,6 +206,47 @@ def create_recipe(recipe_data):
 
 
 '''
+This function updates recipe in the database
+
+'''
+
+
+def update_recipe(recipe_data, recipe_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+
+            # Check if image has to be updated
+            if recipe_data['image_base64'] != '':
+                sql = '''UPDATE recipes 
+                         SET title = %s, description = %s, recipe = %s, ingredients = %s, image_path = %s
+                         WHERE id = %s
+                         '''
+                # Execute query
+                cursor.execute(sql, (recipe_data['title'], recipe_data['description'],
+                                     recipe_data['recipe'], recipe_data['ingredients'], recipe_data['image_path'], recipe_id))
+            else:
+                sql = '''UPDATE recipes 
+                         SET title = %s, description = %s, recipe = %s, ingredients = %s
+                         WHERE id = %s
+                         '''
+                # Execute query
+                cursor.execute(sql, (recipe_data['title'], recipe_data['description'],
+                                     recipe_data['recipe'], recipe_data['ingredients'], recipe_id))
+
+            # Commit to database
+            connection.commit()
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+        return True
+
+
+'''
 This function gets all recipes from a specific user
 
 '''
@@ -380,10 +421,10 @@ def get_recipe_data(recipe_id):
             result = cursor.fetchone()
 
             # Process ingredients
-            ingredientSplit = result['ingredients'].split('</ingredient>')
+            ingredientSplit = result['ingredients'].split('</in>')
             del ingredientSplit[-1]
             ingredients = [
-                item[item.find('<ingredient>')+len('<ingredient>'):] for item in ingredientSplit]
+                item[item.find('<in>')+len('<in>'):] for item in ingredientSplit]
 
             # Add ingredients to result
             result['ingredients'] = ingredients
