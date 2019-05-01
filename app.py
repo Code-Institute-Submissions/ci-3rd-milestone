@@ -352,7 +352,7 @@ def get_recipe_page(recipe_id):
                     return jsonify(message='Something went wrong during database operation', status='failed')
 
             elif request.content_type == 'application/x-www-form-urlencoded':
-                print(request.form['view'])
+
                 if request.form['view'] == 'true':
                     # Update views by one
                     recipe_data = get_recipe_data(recipe_id)
@@ -360,7 +360,7 @@ def get_recipe_page(recipe_id):
 
                     # Update database
                     db_operation = add_view(recipe_id, views)
-                    print(db_operation)
+
                     if db_operation:
                         return jsonify(message='Recipe successfully updated!', status='success')
                     else:
