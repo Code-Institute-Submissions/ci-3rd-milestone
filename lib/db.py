@@ -220,7 +220,7 @@ def update_recipe(recipe_data, recipe_id):
 
             # Check if image has to be updated
             if recipe_data['image_base64'] != '':
-                sql = '''UPDATE recipes 
+                sql = '''UPDATE recipes
                          SET title = %s, description = %s, recipe = %s, ingredients = %s, image_path = %s
                          WHERE id = %s
                          '''
@@ -228,7 +228,7 @@ def update_recipe(recipe_data, recipe_id):
                 cursor.execute(sql, (recipe_data['title'], recipe_data['description'],
                                      recipe_data['recipe'], recipe_data['ingredients'], recipe_data['image_path'], recipe_id))
             else:
-                sql = '''UPDATE recipes 
+                sql = '''UPDATE recipes
                          SET title = %s, description = %s, recipe = %s, ingredients = %s
                          WHERE id = %s
                          '''
@@ -571,9 +571,9 @@ def get_comments(recipe_id):
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
-            SELECT 
-                comments.id AS id, comments.user_id AS user_id, comments.message AS message, 
-                comments.date AS date_created, users.firstname AS firstname, 
+            SELECT
+                comments.id AS id, comments.user_id AS user_id, comments.message AS message,
+                comments.date AS date_created, users.firstname AS firstname,
                 users.lastname AS lastname, users.image_path AS image_path
             FROM comments
             INNER JOIN users ON comments.user_id = users.id
@@ -637,7 +637,7 @@ def add_view(recipe_id, views):
             sql = 'UPDATE recipes SET views = %s WHERE id = %s'
 
             # Execute command
-            cursor.execute(sql, views, recipe_id)
+            cursor.execute(sql, (views, recipe_id))
 
             # Get all results
             connection.commit()

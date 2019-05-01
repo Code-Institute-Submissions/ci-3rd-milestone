@@ -114,6 +114,23 @@
 <script>
   $(document).ready(function () {
     $('textarea#textarea1').characterCounter();
+
+    // Send view page update after 3.5 seconds
+    setTimeout(function () {
+      let urlIdIndex = window.location.pathname.lastIndexOf('/');
+      let recipeId = window.location.pathname.substring(urlIdIndex + 1);
+      fetch(window.location.origin + '/recipe/' + recipeId, {
+        method: 'PATCH',
+        body: 'view=true',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(res => {
+        return res.json()
+      }).then(resData => {
+        console.log(resData);
+      })
+    }, 3500)
   });
 
 </script>
