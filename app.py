@@ -5,10 +5,11 @@ import base64
 import datetime
 import math
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, abort
-from lib.scripts import user_logged_in, convert_datetime
+from lib.scripts import user_logged_in, convert_datetime, check_owner
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
-    get_all_recipes, count_all_recipes, update_recipe
+    get_all_recipes, count_all_recipes, update_recipe, create_comment, get_comments, delete_comment, \
+    add_view
 
 
 # Initialize Flask
@@ -266,9 +267,17 @@ def get_recipe_page(recipe_id):
         # GET REQUEST
         if request.method == 'GET':
             # Get recipe data
-            result = get_recipe_data(recipe_id)
-            if result is None:
+            recipe_data = get_recipe_data(recipe_id)
+            if recipe_data is None:
                 return abort(404)
+
+            recipe_data = check_owner(recipe_data, session['user_id'])
+
+            # Get comments and check if user is owner
+            comments = get_comments(recipe_id)
+            comments = [check_owner(
+                comment, session['user_id']) for comment in comments]
+            commentsAvailable = True if len(comments) > 0 else False
 
             # Get arguments from url to determine edit mode
             editMode = request.args.get('edit')
@@ -276,29 +285,34 @@ def get_recipe_page(recipe_id):
             # When in edit mode, return edit-recipe.html
             if editMode == 'true':
                 return render_template('edit-recipe.html', pageTitle='Edit recipe', navBar=True, logged_in=user_logged_in(),
-                                       title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
-                                       image_path=result['image_path'], date=result['date_created'].strftime(
-                    '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
+                                       title=recipe_data['title'], description=recipe_data[
+                                           'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
+                                       image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
+                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], id=recipe_id)
             else:
                 return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
-                                       title=result['title'], description=result['description'], recipe=result['recipe'], views=result['views'],
-                                       image_path=result['image_path'], date=result['date_created'].strftime(
-                    '%d %b, %Y'), firstname=result['firstname'], lastname=result['lastname'], ingredients=result['ingredients'], id=recipe_id)
+                                       title=recipe_data['title'], description=recipe_data[
+                                           'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
+                                       image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
+                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'], id=recipe_id, comments=comments,
+                    commentsAvailable=commentsAvailable)
 
         # DELETE REQUEST
         elif request.method == 'DELETE':
             # Detele recipe image from server
             recipe_data = get_recipe_data(recipe_id)
-            try:
-                os.remove(recipe_data['image_path'])
-            except Exception as err:
-                print(err)
 
             # Delete recipe from database
             db_operation = delete_recipe(recipe_id)
 
             # Check if operation was successfull
             if db_operation:
+                # Delete image from server
+                try:
+                    os.remove(recipe_data['image_path'])
+                except Exception as err:
+                    print(err)
+
                 return jsonify(message='Recipe successfully deleted!', status='ok')
             else:
                 return jsonify(message='Something went wrong during database operation', status='failed')
@@ -337,11 +351,59 @@ def get_recipe_page(recipe_id):
                 else:
                     return jsonify(message='Something went wrong during database operation', status='failed')
 
+            elif request.content_type == 'application/x-www-form-urlencoded':
+                if request.form['view'] == 'True':
+                    # Update views by one
+                    recipe_data = get_recipe_data(recipe_id)
+                    views = int(recipe_data['views']) + 1
+
+                    # Update database
+                    db_operation = add_view(recipe_id, views)
+                    print(db_operation)
+                    if db_operation:
+                        return jsonify(message='Recipe successfully updated!', status='success')
+                    else:
+                        return jsonify(message='Something went wrong during database operation', status='failed')
+                else:
+                    return jsonify(message='Could not understand patch request', status='failed')
     else:
         return abort(404)
 
+# ============================================================================== COMMENTS
+@app.route('/comment/<recipe_id>', methods=['POST'])
+def post_comment_recipe(recipe_id):
+    # Construct comment data
+    comment_data = {
+        "message": request.form['comment'],
+        "recipe_id": recipe_id,
+        "user_id": session['user_id']
+    }
+
+    # Create comments
+    db_operation = create_comment(comment_data)
+
+    if db_operation:
+        return redirect(url_for('get_recipe_page', recipe_id=recipe_id))
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/comment/<comment_id>', methods=['DELETE'])
+def delete_comment_recipe(comment_id):
+    if comment_id.isdigit():
+        # Create comments
+        db_operation = delete_comment(comment_id)
+
+        if db_operation:
+            return jsonify(message='Comment successfully deleted!', status='success')
+        else:
+            return jsonify(message='Database error occured while trying to delete the comment', status='failed')
+    else:
+        return abort(500)
+
 
 # ============================================================================== USER
+
 
 @app.route('/user/<user_id>', methods=['GET'])
 def get_user_info(user_id):
@@ -416,6 +478,12 @@ def update_user_image():
 @app.errorhandler(404)
 def not_found(error):
     return render_template('not-found.html', pageTitle='Not Found', navBar=True, logged_in=user_logged_in()), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    print(error)
+    return render_template('server-error.html', pageTitle='Not Found', navBar=True, logged_in=user_logged_in()), 500
 
 
 # Run the webserver

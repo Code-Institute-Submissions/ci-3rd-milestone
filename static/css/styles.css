@@ -406,3 +406,55 @@ nav {
 .recipe-line i:hover {
     cursor: pointer;
 }
+
+
+
+
+/* ----------------------------------------------------------------------------- COMMENTS */
+.comment-container {
+    background-color: #fafafa;
+    margin: 0 3rem;
+    padding: 2rem;
+    font-size: 14px
+}
+
+.input-comment-container {
+    display: flex;
+    justify-content: left;
+    background-color: #fafafa;
+    margin: 0 3rem;
+    padding: 2rem;
+}
+
+.comment-form {
+    width: 100%;
+}
+
+.comment-textarea-input {
+    resize: none;
+    height: 100px;
+    background-color: white;
+    font-size: 14px;
+    padding: 0.5rem;
+}
+
+.comment {
+    display: flex;
+    position: relative;
+    padding: 2rem 0;
+    border-bottom: 1px solid #e0dfdf;
+}
+.comment-message {
+    flex-basis: 100%;
+}
+
+.comment-user {
+    flex-basis: 100px;
+    font-size: 12px;
+}
+
+.comment-message div:first-child {
+    font-size: 12px;
+    margin-bottom: 0.3rem;
+    color: #b1b1b1;
+}

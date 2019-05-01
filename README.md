@@ -26,6 +26,8 @@ Here you can see the features that are already implemented and which are left to
 
 
 ### Features Left to Implement
+Serverside input validation (e.g. recipes comments)
+Serverside authorization (e.g. deleting comments/recipes)
 
 
 ## Technologies used

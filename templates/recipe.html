@@ -8,10 +8,13 @@
     <div class="col s12 m9 title">
       <h3>{{title}}</h3>
     </div>
+    {% if owner %}
     <div class="col s12 m3 title">
       <a href="?edit=true" class="waves-effect waves-yellow btn-flat" onclick="atob">edit</a>
-      <a href="#!" class="red-text waves-effect waves-red btn-flat" onclick="TE.deleteRecipe({{ id }})">delete</a>
+      <a href="javascript:void(0);" class="red-text waves-effect waves-red btn-flat"
+        onclick="TE.deleteRecipe({{ id }})">delete</a>
     </div>
+    {% endif %}
   </div>
 
   <div class="row">
@@ -60,7 +63,58 @@
   <div class="row">
     <div class="ruler"></div>
   </div>
+  <div class="row">
+    <div class="comment-container">
+      {% if commentsAvailable %}
+      {% for comment in comments %}
+      <div class="comment">
+        <div class="comment-user">
+          <img class="responsive-img" width="50" src="/{{ comment.image_path }}">
+          <div>{{comment.firstname}}</div>
+          <div>{{comment.lastname}}</div>
+        </div>
+        <div class="comment-message">
+          <div>{{ comment.date }}</div>
+          <div>{{ comment.message }}</div>
+          {% if comment.owner %}
+          <div class="delete-action">
+            <a href="javascript:void(0);" onclick="TE.deleteComment({{comment.id}})">
+              <i class="material-icons grey-text">delete</i>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="comment">
+        <em>Be the first one to write a comment!</em>
+      </div>
+      {% endif%}
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-comment-container">
+      <form id="commentForm" class="comment-form" action="/comment/{{ id }}" method="POST">
+        <div class="comment-textarea">
+          <label for="textarea1">New comment</label>
+          <textarea id="textarea1" class="comment-textarea-input" name="comment" data-length="500"></textarea>
+        </div>
+        <input type="button" value="Submit" onclick="TE.postComment(this)" class="btn btn-small grey darken-1">
+      </form>
+    </div>
+  </div>
 
 
 </div>
+{% endblock %}
+
+<!-- Custom script block -->
+{% block script %}
+<script>
+  $(document).ready(function () {
+    $('textarea#textarea1').characterCounter();
+  });
+
+</script>
 {% endblock %}

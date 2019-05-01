@@ -1,5 +1,6 @@
 import os
 import pymysql
+from lib.scripts import convert_datetime_comments
 
 '''
 Gives a new database connection
@@ -517,6 +518,126 @@ def delete_recipe(recipe_id):
             # Execute command
             cursor.execute(
                 sql, recipe_id)
+
+            # Get all results
+            connection.commit()
+
+            return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function creates a new comment in the database
+
+'''
+
+
+def create_comment(comment_data):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''INSERT INTO comments (user_id, recipe_id, message)
+                    VALUES (%s, %s, %s)'''
+
+            # Execute query
+            cursor.execute(
+                sql, (comment_data['user_id'], comment_data['recipe_id'], comment_data['message']))
+
+            # Commit to database
+            connection.commit()
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+        return True
+
+
+'''
+This function gets all comments from a recipe page
+
+'''
+
+
+def get_comments(recipe_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+            SELECT 
+                comments.id AS id, comments.user_id AS user_id, comments.message AS message, 
+                comments.date AS date_created, users.firstname AS firstname, 
+                users.lastname AS lastname, users.image_path AS image_path
+            FROM comments
+            INNER JOIN users ON comments.user_id = users.id
+            WHERE recipe_id = %s'''
+
+            # Execute command
+            cursor.execute(sql, recipe_id)
+
+            # Get all results
+            result = cursor.fetchall()
+
+            # Transform date string
+            result = [convert_datetime_comments(item) for item in result]
+
+            return result
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function deletes a recipe
+
+'''
+
+
+def delete_comment(comment_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'DELETE FROM comments WHERE id=%s'
+
+            # Execute command
+            cursor.execute(sql, comment_id)
+
+            # Get all results
+            connection.commit()
+
+            return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function adds a view on a recipe
+
+'''
+
+
+def add_view(recipe_id, views):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'UPDATE recipes SET views = %s WHERE id = %s'
+
+            # Execute command
+            cursor.execute(sql, views, recipe_id)
 
             # Get all results
             connection.commit()

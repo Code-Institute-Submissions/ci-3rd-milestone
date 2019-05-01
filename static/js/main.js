@@ -4,6 +4,8 @@ const dashboardRecipeTemplate = require('../../templates/handlebars/dashboard-re
 const dashboardUserTemplate = require('../../templates/handlebars/dashboard-personal.hbs');
 const drinksRecipePage = require('../../templates/handlebars/drinks-recipe-page.hbs');
 
+const qs = require('querystring');
+
 
 // JAVASCRIPT MODULES
 const Croppie = require('croppie');
@@ -367,7 +369,7 @@ const updateRecipe = btn => {
     }
 
     // Check if values are not empty
-    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "" || formParams.ingredients == "") {
+    if (formParams.title == "" || formParams.description == "" || formParams.recipe == "") {
         return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
     }
 
@@ -649,6 +651,50 @@ const removeRecipeLine = element => {
 }
 
 
+// ----------------------------------------------------------------------------- DELETE RECIPE COMMENT
+const postComment = element => {
+    const form = element.parentNode;
+    const message = $(form).find('textarea')[0].value;
+
+    if (message === '') {
+        return;
+    }
+    else if (message.length > 500) {
+        return M.toast({ html: 'Message is too long, maximum character of 500 allowed!', classes: 'red darken-1' });
+    }
+
+    $(form).submit();
+}
+
+
+// ----------------------------------------------------------------------------- DELETE RECIPE COMMENT
+const deleteComment = commentId => {
+
+    fetch(window.location.origin + '/comment/' + commentId, {
+        method: 'DELETE'
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+        // Render template
+        console.log(resObj)
+        if (resObj.status === 'success') {
+            document.location.reload(true)
+        }
+        else if (resObj.status === 'failed') {
+            return M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
+        }
+    })
+}
+
+const testQS = () => {
+    const bo = {
+        'hoi': 'doei'
+    }
+
+    console.log(qs.stringify(bo));
+}
+
 // ----------------------------------------------------------------------------- EXPORTS
 module.exports = {
     signupUser: signupUser,
@@ -661,7 +707,10 @@ module.exports = {
     deleteRecipe: deleteRecipe,
     getRecipes: getRecipes,
     addRecipeLine: addRecipeLine,
-    removeRecipeLine: removeRecipeLine
+    removeRecipeLine: removeRecipeLine,
+    postComment: postComment,
+    deleteComment: deleteComment,
+    testQS: testQS
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy
