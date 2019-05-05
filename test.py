@@ -1,4 +1,4 @@
-from lib.db import create_favorite, get_favorite
+from lib.db import create_favorite, get_favorite, add_rating, update_rating, get_ratings
 
 # profile get_recipes
 # get_recipes(1)
@@ -8,7 +8,13 @@ from lib.db import create_favorite, get_favorite
 
 # result = get_comments(37)
 # result = create_favorite(38, 1)
-result = get_favorite(38, 2)
+# result = get_favorite(38, 2)
 
-print(len(result))
-print(result)
+
+db_operation = update_rating('38', '1', 4)
+
+print(db_operation)
+
+
+# print(len(result))
+# print(result)

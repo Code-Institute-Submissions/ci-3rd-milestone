@@ -9,7 +9,8 @@ from lib.scripts import user_logged_in, convert_datetime, check_owner
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
     get_all_recipes, count_all_recipes, update_recipe, create_comment, get_comments, delete_comment, \
-    add_view, get_favorite, create_favorite, delete_favorite, get_all_favorites
+    add_view, get_favorite, create_favorite, delete_favorite, get_all_favorites, get_ratings, \
+        add_rating, update_rating
 
 
 # Initialize Flask
@@ -280,6 +281,9 @@ def get_recipe_page(recipe_id):
             else:
                 recipe_data['favorite'] = True
 
+            # Get ratings
+            rating_data = get_ratings(recipe_id, session['user_id'])
+
             # Get comments and check if user is owner
             comments = get_comments(recipe_id)
             comments = [check_owner(
@@ -302,7 +306,7 @@ def get_recipe_page(recipe_id):
                                            'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
                                        image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
                     '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'],
-                    favorite=recipe_data['favorite'], id=recipe_id, comments=comments,
+                    favorite=recipe_data['favorite'], id=recipe_id, comments=comments, rating=rating_data,
                     commentsAvailable=commentsAvailable)
 
         # DELETE REQUEST
@@ -370,7 +374,7 @@ def get_recipe_page(recipe_id):
                     db_operation = add_view(recipe_id, views)
 
                     if db_operation:
-                        return jsonify(message='Recipe successfully updated!', status='success')
+                        return jsonify(message='Recipe view successfully updated!', status='success')
                     else:
                         return jsonify(message='Something went wrong during database operation', status='failed')
                 else:
@@ -432,9 +436,33 @@ def recipe_favorite(recipe_id):
         else:
             return jsonify(message='Database error occured while trying to delete the favorite', status='failed')
 
+
+# ============================================================================== RATING
+@app.route('/rating/', methods=['PATCH'])
+def update_rating_recipe():
+    if request.is_json:
+        # Get json data
+        rating_data = request.get_json()
+
+        # Check if rating exists for user
+        rating = get_ratings(rating_data['recipe_id'], session['user_id'])
+
+        if rating['user_rating'] == None:
+            db_operation = add_rating(rating_data['recipe_id'], session['user_id'], rating_data['rating'])
+        else:
+            db_operation = update_rating(rating_data['recipe_id'], session['user_id'], rating_data['rating'])
+
+        # Check if db operation was successful
+        if db_operation:
+            return jsonify(message='Rating updated!', status='success')
+        else:
+            return jsonify(message='Something went wrong :/', status='failed')
+
+
+    return jsonify(message='Request is not JSON', status='failed')
+
+
 # ============================================================================== USER
-
-
 @app.route('/user/<user_id>', methods=['GET'])
 def get_user_info(user_id):
     if user_id.isdigit():

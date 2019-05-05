@@ -780,3 +780,131 @@ def delete_favorite(recipe_id, user_id):
         return False
     finally:
         connection.close()
+
+
+'''
+This function adds a new rating for a recipe
+
+'''
+
+
+def add_rating(recipe_id, user_id, rating):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''INSERT INTO ratings (recipe_id, user_id, rating)
+                    VALUES (%s, %s, %s)'''
+
+            # Execute query
+            cursor.execute(
+                sql, (recipe_id, user_id, rating))
+
+            # Commit to database
+            connection.commit()
+
+            return True
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function updates a rating for a recipe
+
+'''
+
+
+def update_rating(recipe_id, user_id, rating):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+                    UPDATE ratings
+                    SET rating = %s
+                    WHERE recipe_id = %s AND user_id = %s
+                '''
+
+            # Execute query
+            cursor.execute(
+                sql, (rating, recipe_id, user_id))
+
+            # Commit to database
+            connection.commit()
+
+            return True
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets a rating from a recipe. When user_id is filled in, the rating
+of the user will be fetched as well
+
+'''
+
+
+def get_ratings(recipe_id, user_id=None):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+                    SELECT id, rating, user_id 
+                    FROM ratings
+                    WHERE recipe_id = %s
+                '''
+
+            # Execute query
+            cursor.execute(
+                sql, recipe_id)
+
+            # Get results from database
+            ratings = cursor.fetchall()
+
+            if len(ratings) > 0:
+                # Calculate average rating
+                sumRating = 0
+                for rating in ratings:
+                    sumRating += rating["rating"]
+
+                averageRating = sumRating / len(ratings)
+            else: 
+                averageRating = 0.0
+
+            result = {
+                "ratings": ratings,
+                "average": round(averageRating, 1),
+                "user_rating": None
+            }
+
+            if user_id is not None:
+                # If user id is filled, get user rating
+                sql = '''
+                        SELECT id, rating, user_id 
+                        FROM ratings
+                        WHERE recipe_id = %s AND user_id = %s
+                    '''
+
+                # Execute query
+                cursor.execute(sql, (recipe_id, user_id))
+
+                user_rating = cursor.fetchone()
+
+                result["user_rating"] = user_rating
+
+            return result
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
