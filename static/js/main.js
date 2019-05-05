@@ -1,14 +1,8 @@
 // RENDER TEMPLATES
-const testTemplate = require('../../templates/handlebars/test.hbs');
 const dashboardRecipeTemplate = require('../../templates/handlebars/dashboard-recipes.hbs');
 const dashboardUserTemplate = require('../../templates/handlebars/dashboard-personal.hbs');
 const drinksRecipePage = require('../../templates/handlebars/drinks-recipe-page.hbs');
-
-const qs = require('querystring');
-
-
-// JAVASCRIPT MODULES
-const Croppie = require('croppie');
+const favoritesTemplate = require('../../templates/handlebars/dashboard-favorites.hbs');
 
 
 // ----------------------------------------------------------------------------- CROPPIE LISTENERS
@@ -486,7 +480,7 @@ const getUserData = () => {
         // Get json object
         return res.json()
     }).then(resObj => {
-        // Render template
+        // Set userdata in object
         TE.userData = resObj;
 
         // Set form fields
@@ -501,6 +495,37 @@ const getUserData = () => {
         // Edit html DOM
         $('#user-loader').remove();
         $('#user-container').append(htmlString);
+    })
+
+}
+
+// ----------------------------------------------------------------------------- GET USER FAVORITES
+const getUserFavorites = () => {
+    // Get all recipe data from user
+    fetch(window.location.origin + '/user/favorites', {
+        method: 'GET',
+        redirect: 'follow'
+    }).then(res => {
+        // Get json object
+        return res.json()
+    }).then(resObj => {
+
+        // Map description
+        resObj.favorites.map(favorite => {
+            if (favorite.description.length > 100) {
+                favorite.description = favorite.description.slice(0, 100) + '...';
+            }
+            return favorite;
+        });
+
+        // Get html template
+        const htmlString = favoritesTemplate(resObj);
+
+        console.log(htmlString)
+        console.log(resObj.favorites)
+        // Edit html DOM
+        $('#favorites-loader').remove();
+        $('#favorites-container').append(htmlString);
     })
 
 }
@@ -684,15 +709,67 @@ const deleteComment = commentId => {
         else if (resObj.status === 'failed') {
             return M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
         }
-    })
+    });
 }
 
-const testQS = () => {
-    const bo = {
-        'hoi': 'doei'
+// ----------------------------------------------------------------------------- ADD FAVORITE RECIPE
+const toggleFavorite = (recipeId, element) => {
+    // Check which class is active
+    let isFav = false;
+    if ($('.favorite-active')[0]) isFav = true;
+
+    if (!isFav) {
+        fetch(window.location.origin + '/favorite/' + recipeId, {
+            method: 'POST'
+        }).then(res => {
+            // Get json object
+            return res.json()
+        }).then(resObj => {
+            // Render template
+            console.log(resObj)
+            if (resObj.status === 'success') {
+                $(element).toggleClass('favorite-active');
+            }
+            else if (resObj.status === 'failed') {
+                return M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
+            }
+        });
+    }
+    else {
+        fetch(window.location.origin + '/favorite/' + recipeId, {
+            method: 'DELETE'
+        }).then(res => {
+            // Get json object
+            return res.json()
+        }).then(resObj => {
+            // Render template
+            console.log(resObj)
+            if (resObj.status === 'success') {
+                $(element).toggleClass('favorite-active');
+            }
+            else if (resObj.status === 'failed') {
+                return M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
+            }
+        });
     }
 
-    console.log(qs.stringify(bo));
+
+
+    // fetch(window.location.origin + '/comment/' + commentId, {
+    //     method: 'DELETE'
+    // }).then(res => {
+    //     // Get json object
+    //     return res.json()
+    // }).then(resObj => {
+    //     // Render template
+    //     console.log(resObj)
+    //     if (resObj.status === 'success') {
+    //         document.location.reload(true)
+    //     }
+    //     else if (resObj.status === 'failed') {
+    //         return M.toast({ html: 'Oops... Something went wrong', classes: 'red darken-1' });
+    //     }
+    // });
 }
 
 // ----------------------------------------------------------------------------- EXPORTS
@@ -703,6 +780,7 @@ module.exports = {
     updateRecipe: updateRecipe,
     getUserRecipes: getUserRecipes,
     getUserData: getUserData,
+    getUserFavorites: getUserFavorites,
     updateUserData: updateUserData,
     deleteRecipe: deleteRecipe,
     getRecipes: getRecipes,
@@ -710,7 +788,7 @@ module.exports = {
     removeRecipeLine: removeRecipeLine,
     postComment: postComment,
     deleteComment: deleteComment,
-    testQS: testQS
+    toggleFavorite: toggleFavorite
 }
 
 // https://codepen.io/asrulnurrahim/pen/WOyzxy

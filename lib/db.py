@@ -406,7 +406,7 @@ def get_recipe_data(recipe_id):
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = '''
             SELECT
-                recipes.user_id AS user_id, recipes.title AS title,
+                recipes.id AS id, recipes.user_id AS user_id, recipes.title AS title,
                 recipes.description AS description, recipes.recipe AS recipe,
                 recipes.views AS views, recipes.image_path AS image_path,
                 recipes.date_created AS date_created, recipes.ingredients AS ingredients,
@@ -550,13 +550,13 @@ def create_comment(comment_data):
 
             # Commit to database
             connection.commit()
+            return True
 
     except Exception as err:
         print(err)
         return False
     finally:
         connection.close()
-        return True
 
 
 '''
@@ -643,6 +643,138 @@ def add_view(recipe_id, views):
             connection.commit()
 
             return True
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets a favorite of a user in the database
+
+'''
+
+
+def get_favorite(recipe_id, user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+            SELECT
+                favorites.recipe_id AS recipe_id, favorites.id AS id, 
+                favorites.user_id AS user_id, recipes.title AS title, 
+                recipes.description AS description
+            FROM favorites
+            INNER JOIN recipes ON favorites.recipe_id = recipes.id
+            WHERE favorites.recipe_id = %s AND favorites.user_id = %s'''
+
+            # Execute query
+            cursor.execute(
+                sql, (recipe_id, user_id))
+
+            # Get results
+            results = cursor.fetchall()
+
+            return results
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets all favorites of a user in the database
+
+'''
+
+
+def get_all_favorites(user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+            SELECT
+                favorites.recipe_id AS recipe_id, favorites.id AS id, 
+                favorites.user_id AS user_id, recipes.title AS title, 
+                recipes.description AS description
+            FROM favorites
+            INNER JOIN recipes ON favorites.recipe_id = recipes.id
+            WHERE favorites.user_id = %s'''
+
+            # Execute query
+            cursor.execute(
+                sql, (user_id))
+
+            # Get results
+            results = cursor.fetchall()
+
+            return results
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function creates a new favorite in the database
+
+'''
+
+
+def create_favorite(recipe_id, user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''INSERT INTO favorites (recipe_id, user_id)
+                    VALUES (%s, %s)'''
+
+            # Execute query
+            cursor.execute(
+                sql, (recipe_id, user_id))
+
+            # Commit to database
+            connection.commit()
+
+            return True
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function deletes all favorites for a recipe for a specific user in the database
+
+'''
+
+
+def delete_favorite(recipe_id, user_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = '''
+                    DELETE FROM favorites 
+                    WHERE recipe_id = %s AND user_id = %s 
+                    '''
+
+            # Execute query
+            cursor.execute(
+                sql, (recipe_id, user_id))
+
+            # Commit to database
+            connection.commit()
+
+            return True
+
     except Exception as err:
         print(err)
         return False

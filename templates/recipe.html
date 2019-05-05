@@ -38,6 +38,16 @@
         <div class="col s12 m2"><strong>Rating</strong></div>
         <div class="col s12 m10">-</div>
       </div>
+      <div class="row">
+        <div class="col s12">
+          {% if favorite %}
+          <i class="material-icons favorite-recipe favorite-active"
+            onclick="TE.toggleFavorite({{ id }}, this)">favorite</i>
+          {% else %}
+          <i class="material-icons favorite-recipe" onclick="TE.toggleFavorite({{ id }}, this)">favorite</i>
+          {% endif %}
+        </div>
+      </div>
       <div class="row" style="margin-top:3rem">
         <div class="col s12"><strong>Description</strong></div>
         <div class="col s12">{{description}}</div>

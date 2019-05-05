@@ -458,3 +458,40 @@ nav {
     margin-bottom: 0.3rem;
     color: #b1b1b1;
 }
+
+.favorite-recipe {
+    font-size: 2rem;
+    color: #b5b5b5;
+    margin-top: 1rem;
+}
+
+.favorite-recipe:hover {
+    cursor: pointer;
+    color: #c7c7c7;
+}
+
+.favorite-active {
+    color: #ee6e73;
+}
+
+.favorite-active:hover {
+    color: #f3999c;
+}
+
+.favorite-item {
+    padding: 0.75rem;
+}
+
+.favorite-item:hover {
+    cursor: pointer;
+    background-color:#ff670021;
+}
+
+.favorite-item div:first-child {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.favorite-item div:last-child {
+    font-size: 1rem;
+}

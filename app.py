@@ -9,7 +9,7 @@ from lib.scripts import user_logged_in, convert_datetime, check_owner
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
     get_all_recipes, count_all_recipes, update_recipe, create_comment, get_comments, delete_comment, \
-    add_view
+    add_view, get_favorite, create_favorite, delete_favorite, get_all_favorites
 
 
 # Initialize Flask
@@ -273,6 +273,13 @@ def get_recipe_page(recipe_id):
 
             recipe_data = check_owner(recipe_data, session['user_id'])
 
+            # Check favorite
+            favorite = get_favorite(recipe_id, session['user_id'])
+            if len(favorite) == 0:
+                recipe_data['favorite'] = False
+            else:
+                recipe_data['favorite'] = True
+
             # Get comments and check if user is owner
             comments = get_comments(recipe_id)
             comments = [check_owner(
@@ -294,7 +301,8 @@ def get_recipe_page(recipe_id):
                                        title=recipe_data['title'], description=recipe_data[
                                            'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
                                        image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
-                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'], id=recipe_id, comments=comments,
+                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'],
+                    favorite=recipe_data['favorite'], id=recipe_id, comments=comments,
                     commentsAvailable=commentsAvailable)
 
         # DELETE REQUEST
@@ -403,6 +411,27 @@ def delete_comment_recipe(comment_id):
         return abort(500)
 
 
+# ============================================================================== FAVORITES
+@app.route('/favorite/<recipe_id>', methods=['POST', 'DELETE'])
+def recipe_favorite(recipe_id):
+    if request.method == 'POST':
+        # Check if favorite already present
+        favorite = get_favorite(recipe_id, session['user_id'])
+
+        if len(favorite) == 0:
+            db_operation = create_favorite(recipe_id, session['user_id'])
+            if db_operation is not True:
+                return jsonify(message='Database error occured while trying to add the favorite', status='failed')
+
+        return jsonify(message='Favorite successfully added!', status='success')
+
+    elif request.method == 'DELETE':
+        db_operation = delete_favorite(recipe_id, session['user_id'])
+        if db_operation:
+            return jsonify(message='Favorite successfully deleted!', status='success')
+        else:
+            return jsonify(message='Database error occured while trying to delete the favorite', status='failed')
+
 # ============================================================================== USER
 
 
@@ -439,6 +468,18 @@ def redirect_to_user_info():
                 return jsonify(message='Something went wrong during database operation', status='failed')
         else:
             return jsonify(message='Please provide json request', status='failed')
+
+
+@app.route('/user/favorites', methods=['GET'])
+def get_user_favorites():
+    # Get all user favorites
+    favorites = get_all_favorites(session['user_id'])
+
+    # Check if error occured
+    if favorites is False:
+        return jsonify(message='An error occured during database operation', status='failed')
+
+    return jsonify(status='success', favorites=favorites)
 
 
 @app.route('/user/image', methods=['POST'])
