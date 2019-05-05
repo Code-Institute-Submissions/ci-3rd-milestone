@@ -882,7 +882,8 @@ def get_ratings(recipe_id, user_id=None):
 
             result = {
                 "ratings": ratings,
-                "average": round(averageRating, 1),
+                "average": str(round(averageRating, 1)) + ' out of 5 stars',
+                "total": str(len(ratings)) + ' ratings' if len(ratings) != 1 else str(len(ratings)) + ' rating',
                 "user_rating": None
             }
 

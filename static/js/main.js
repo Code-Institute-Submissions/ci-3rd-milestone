@@ -651,10 +651,10 @@ const addRecipeLine = element => {
     // Insert new line
     const htmlLine = `
     <div class="row recipe-line" style="margin-bottom: 0">
-        <div class="input-field col s10">
+        <div class="input-field col recipe-line-description">
         <input id="last_name" type="text" class="validate" placeholder="Extra ingredient">
         </div>
-        <div class="col s2"><i class="small material-icons deep-orange-text text-darken-1 right-align"
+        <div class=""><i class="recipe-line-icon small material-icons deep-orange-text text-darken-1 right-align"
             onclick="TE.addRecipeLine(this)">add_circle_outline</i>
         </div>
     </div>`;

@@ -9,7 +9,7 @@
 {% block content %}
 <div class="container">
   <div class="row valign-wrapper" style="align-items:unset; margin-top:3rem">
-    <div class="col m12 l7 new-recipe-info-container">
+    <div class="col s12 new-recipe-info-container">
       <div class="row">
         <div class="col s12 title">
           <h3>Edit Recipe</h3>
@@ -24,20 +24,20 @@
           </label>
         </div>
       </div>
-      <div class="row" style="margin-top:100px; margin-bottom: 0">
+      <div class="row" style="margin-top:100px; margin-bottom: 0; max-width: 600px;">
         <div class="input-field col s12">
           <input id="title" type="text" name="title" value="{{ title }}">
           <label for="title">Title</label>
         </div>
       </div>
-      <div class="row" style="margin-bottom: 0">
+      <div class="row" style="margin-bottom: 0; max-width: 600px;">
         <div class="input-field col s12">
           <textarea id="textarea1" class="materialize-textarea" data-length="250"
             name="description">{{ description }}</textarea>
           <label for="textarea1">Description</label>
         </div>
       </div>
-      <div class="row" style="margin-bottom: 0">
+      <div class="row" style="margin-bottom: 0; max-width: 600px;">
         <div class="input-field col s12">
           <textarea id="textarea2" class="materialize-textarea" data-length="500" name="recipe">{{ recipe }}</textarea>
           <label for="textarea2">Recipe</label>
@@ -50,19 +50,19 @@
       </div>
       {% for ingredient in ingredients %}
       <div class="row recipe-line" style="margin-bottom: 0">
-        <div class="input-field col s10">
+        <div class="input-field col recipe-line-description">
           <input id="last_name" type="text" class="validate" value="{{ ingredient }}">
         </div>
-        <div class="col s2"><i class="small material-icons grey-text right-align"
+        <div class=""><i class="recipe-line-icon small material-icons grey-text right-align"
             onclick="TE.removeRecipeLine(this)">remove_circle_outline</i>
         </div>
       </div>
       {% endfor %}
       <div class="row recipe-line" style="margin-bottom: 0">
-        <div class="input-field col s10">
+        <div class="input-field col recipe-line-description">
           <input id="last_name" type="text" class="validate" placeholder="Additional ingredient ...">
         </div>
-        <div class="col s2"><i class="small material-icons deep-orange-text text-darken-1 right-align"
+        <div class=""><i class="recipe-line-icon small material-icons deep-orange-text text-darken-1 right-align"
             onclick="TE.addRecipeLine(this)">add_circle_outline</i>
         </div>
       </div>
@@ -74,11 +74,6 @@
           </button>
         </div>
       </div>
-    </div>
-    <div class="col l5 hide-on-med-and-down side-note left-border">
-      <p>Here you can add your new recipes. <br><br>Please choose a nice title that will attract users.<br><br> You can
-        also
-        add a description of the recipe and ofcourse the recipe itself.</p>
     </div>
   </div>
 </div>

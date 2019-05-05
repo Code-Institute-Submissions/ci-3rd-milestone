@@ -401,6 +401,18 @@ nav {
 .recipe-line {
     display: flex;
     align-items: center;
+    max-width: 600px;
+    position: relative;
+}
+
+.recipe-line-description {
+    width: 100%;
+    max-width: 450px;
+}
+
+.recipe-line-icon {
+    position: absolute;
+    right: 0;
 }
 
 .recipe-line i:hover {
