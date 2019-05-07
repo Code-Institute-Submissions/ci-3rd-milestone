@@ -66,6 +66,8 @@ def initialize_db():
                         `recipe` varchar(256) NOT NULL,
                         `ingredients` varchar(256) NOT NULL,
                         `views` int DEFAULT 0,
+                        `avg_rating` float  DEFAULT 0,
+                        `nr_ratings` int DEFAULT 0,
                         `image_path` varchar(256),
                         `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         PRIMARY KEY (id),
