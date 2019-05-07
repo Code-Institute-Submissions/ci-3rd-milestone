@@ -381,8 +381,9 @@ nav {
 
 
 .items-page-card-link {
-    flex-basis: 45%;
-    margin: 1rem 0;
+    flex-basis: 100%;
+    max-width: 400px;
+    margin: 1rem 1rem;
 }
 
 .items-page-card-link.disabled {
@@ -391,7 +392,7 @@ nav {
 
 .recipes-page-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     flex-direction: row;
     flex-wrap: wrap;
 }
@@ -399,11 +400,36 @@ nav {
 .items-page-card {
     border: 1px solid #e0e0e0;
     box-shadow: none;
+    color: black
 }
 
 .items-page-card:hover {
     background-color: #ff670021;
     cursor: pointer;
+}
+
+.card-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: #a7a7a7;
+}
+
+.card-info > div {
+    margin:0 0.5rem;
+}
+
+.card-info > div:last-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+}
+
+.card-info > div:last-child .rating {
+    font-size: 16px;
+    margin-right: 0.5em;
+    color: #f4511e;
 }
 
 .recipe-pagination {

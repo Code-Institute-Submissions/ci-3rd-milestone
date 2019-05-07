@@ -472,7 +472,8 @@ def get_all_recipes(results_per_page, page, labels, rating):
             if labels is None and rating is None:
                 sql = '''
                 SELECT
-                    id, title, description, views, image_path, date_created, avg_rating
+                    id, title, description, views, image_path, date_created, avg_rating,
+                    nr_ratings
                 FROM recipes
                 ORDER BY date_created DESC
                 LIMIT %s, %s
@@ -485,7 +486,8 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 # Get recipes with specific rating
                 sql = '''
                 SELECT
-                    id, title, description, views, image_path, date_created, avg_rating
+                    id, title, description, views, image_path, date_created, avg_rating,
+                    nr_ratings
                 FROM recipes
                 WHERE avg_rating >= %s
                 ORDER BY avg_rating DESC
@@ -500,7 +502,8 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 # Get recipes with specific rating
                 sql = '''
                 SELECT
-                    recipes.id, title, description, views, image_path, date_created, avg_rating
+                    recipes.id, title, description, views, image_path, date_created, avg_rating,
+                    nr_ratings
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE '''
@@ -526,7 +529,8 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 # Get recipes with specific rating
                 sql = '''
                 SELECT
-                    recipes.id, title, description, views, image_path, date_created, avg_rating
+                    recipes.id, title, description, views, image_path, date_created, avg_rating,
+                    nr_ratings
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE ('''

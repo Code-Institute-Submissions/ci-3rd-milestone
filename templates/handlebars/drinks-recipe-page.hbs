@@ -11,8 +11,25 @@
           <p class="date"><strong>{{date}}</strong></p>
           <p class="description">{{description}}</p>
         </div>
-        <div class="card-action">
-
+        <div class="card-action card-info">
+          <i class="material-icons">visibility</i>
+          <div>{{views}}</div>
+          <div>
+            {{#if stars.zero}}
+            <div class="rating">&#9734;&#9734;&#9734;&#9734;&#9734;</div>
+            {{else if stars.one}}
+            <div class="rating">&#9733;&#9734;&#9734;&#9734;&#9734;</div>
+            {{else if stars.two}}
+            <div class="rating">&#9733;&#9733;&#9734;&#9734;&#9734;</div>
+            {{else if stars.three}}
+            <div class="rating">&#9733;&#9733;&#9733;&#9734;&#9734;</div>
+            {{else if stars.four}}
+            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+            {{else if stars.five}}
+            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            {{/if}}
+            <div>({{nr_ratings}})</div>
+          </div>
         </div>
       </div>
     </div>

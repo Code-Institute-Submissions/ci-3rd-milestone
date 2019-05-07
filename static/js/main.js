@@ -660,7 +660,7 @@ const getRecipes = page => {
         // Get json object
         return res.json()
     }).then(resObj => {
-        // console.log(resObj);
+        console.log(resObj);
         let recipes = resObj.recipes;
 
         //Check if equal amount of items
@@ -668,8 +668,35 @@ const getRecipes = page => {
         if (Math.floor(recipes.length / 2) == recipes.length / 2) {
             uneven = false;
         }
-
         resObj.uneven = uneven;
+
+        // Map description and rating 
+        resObj.recipes.map(recipe => {
+            // Cut description if necessary
+            if (recipe.description.length > 100) {
+                recipe.description = recipe.description.slice(0, 100) + '...';
+            }
+            // Determinae how many stars
+            recipe.stars = {
+                zero: false,
+                one: false,
+                two: false,
+                three: false,
+                four: false,
+                five: false
+            }
+            const eps = 0.2;
+            if (recipe.avg_rating >= 5 - eps) recipe.stars.five = true;
+            else if (recipe.avg_rating >= 4 - eps) recipe.stars.four = true;
+            else if (recipe.avg_rating >= 3 - eps) recipe.stars.three = true;
+            else if (recipe.avg_rating >= 2 - eps) recipe.stars.two = true;
+            else if (recipe.avg_rating >= 1 - eps) recipe.stars.one = true;
+            else recipe.stars.zero = true;
+
+            return recipe;
+        });
+
+        console.log(resObj)
         // Render template
         const htmlString = drinksRecipePage(resObj);
 
