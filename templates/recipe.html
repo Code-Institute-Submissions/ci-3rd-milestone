@@ -66,10 +66,18 @@
         </div>
       </div>
       <div class="row" style="margin-top:3rem">
-        <div class="col s12"><strong>Description</strong></div>
-        <div class="col s12">{{description}}</div>
+        <div class="col s12"><strong>Labels</strong></div>
+        <div class="col s12 labels-container">
+          {% for label in labels %}
+          <div class="label">{{label.name}}</div>
+          {% endfor %}
+        </div>
       </div>
     </div>
+  </div>
+  <div class="row" style="margin-top:3rem">
+    <div class="col s12"><strong>Description</strong></div>
+    <div class="col s12">{{description}}</div>
   </div>
   <div class="row" style="margin-top: 3rem;">
     <div class="col s12"><strong>Recipe</strong></div>

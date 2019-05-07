@@ -24,7 +24,19 @@
           </label>
         </div>
       </div>
-      <div class="row" style="margin-top:100px; margin-bottom: 0; max-width: 600px;">
+      <div class="row" style="margin-top: 100px; max-width: 600px;">
+        <div class="col s12" style="padding:0;">
+          <div class="input-field col s12">
+            <select multiple>
+              {% for label in labels %}
+              <option value="{{label.id}}" {%if label.active%} selected {% endif %}>{{label.name}}</option>
+              {% endfor %}
+            </select>
+            <label>Recipe labels</label>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom: 0; max-width: 600px;">
         <div class="input-field col s12">
           <input id="title" type="text" name="title" value="{{ title }}">
           <label for="title">Title</label>
@@ -83,7 +95,11 @@
 {% block script %}
 <script>
   $(document).ready(function () {
+    // Activate text area
     $('textarea#textarea1, textarea#textarea2').characterCounter();
+
+    // Activate select
+    $('select').formSelect({ isMultiple: true });
   });
 </script>
 {% endblock %}

@@ -30,3 +30,12 @@ def check_owner(item, user_id):
     else:
         item['owner'] = False
     return item
+
+
+def check_active_labels(label, recipe_labels):
+
+    if label['id'] in recipe_labels:
+        label['active'] = True
+    else:
+        label['active'] = False
+    return label

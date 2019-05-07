@@ -91,6 +91,7 @@ def initialize_db():
                         PRIMARY KEY (id),
                         FOREIGN KEY (user_id) REFERENCES users(id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+                        ON DELETE CASCADE
                         )'''
 
             cursor.execute(sql)
@@ -111,6 +112,7 @@ def initialize_db():
                         PRIMARY KEY (id),
                         FOREIGN KEY (user_id) REFERENCES users(id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+                        ON DELETE CASCADE
                         )'''
 
             cursor.execute(sql)
@@ -145,7 +147,9 @@ def initialize_db():
                         `label_id` int NOT NULL,
                         PRIMARY KEY (id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+                        ON DELETE CASCADE
                         FOREIGN KEY (label_id) REFERENCES labels(id)
+                        ON DELETE CASCADE
                         )'''
 
             cursor.execute(sql)
@@ -164,6 +168,7 @@ def initialize_db():
                         `user_id` int NOT NULL,
                         PRIMARY KEY (id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+                        ON DELETE CASCADE
                         FOREIGN KEY (user_id) REFERENCES users(id)
                         )'''
 
@@ -198,12 +203,16 @@ def create_recipe(recipe_data):
             # Commit to database
             connection.commit()
 
+            sql = '''SELECT LAST_INSERT_ID() AS recipe_id'''
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            return result
+
     except Exception as err:
         print(err)
         return False
     finally:
         connection.close()
-        return True
 
 
 '''
@@ -877,7 +886,7 @@ def get_ratings(recipe_id, user_id=None):
                     sumRating += rating["rating"]
 
                 averageRating = sumRating / len(ratings)
-            else: 
+            else:
                 averageRating = 0.0
 
             result = {
@@ -904,6 +913,114 @@ def get_ratings(recipe_id, user_id=None):
 
             return result
 
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+'''
+This function gets all labels for recipes
+
+'''
+
+
+def get_labels(recipe_id=None):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+
+            if recipe_id is None:
+                sql = '''
+                    SELECT * FROM labels ORDER BY name ASC
+                    '''
+                # Execute query
+                cursor.execute(sql)
+            else: 
+                sql = '''
+                    SELECT label_recipe.id AS id, label_recipe.recipe_id AS recipe_id, 
+                    label_recipe.label_id AS label_id, labels.name AS name 
+                    FROM label_recipe
+                    INNER JOIN labels ON label_recipe.label_id = labels.id 
+                    WHERE recipe_id = %s
+                    ORDER BY name ASC
+                    '''
+                # Execute query
+                cursor.execute(sql,recipe_id)            
+
+            # Get results
+            results = cursor.fetchall()
+
+            return results
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+
+'''
+This function adds labels to a recipe
+
+'''
+
+
+def add_labels_to_recipe(recipe_id, labels):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            # construct sql code
+            sql = '''INSERT INTO label_recipe (recipe_id, label_id)
+                    VALUES '''
+
+            for i in range(len(labels)):
+                if i != len(labels)-1:
+                    sql += ' (' + str(recipe_id) + ',' + str(labels[i]) + '), '
+                else:
+                    sql += ' (' + str(recipe_id) + ',' + str(labels[i]) + ')'
+            
+          
+            # Execute query
+            cursor.execute(sql)
+
+            # Commit to database
+            connection.commit()
+
+            return True
+
+    except Exception as err:
+        print(err)
+        return False
+    finally:
+        connection.close()
+
+
+
+'''
+This function deletes all labels for a recipe
+
+'''
+
+
+def delete_labels(recipe_id):
+    connection = new_connection()
+
+    try:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = 'DELETE FROM label_recipe WHERE recipe_id=%s'
+
+            # Execute command
+            cursor.execute(
+                sql, recipe_id)
+
+            # Get all results
+            connection.commit()
+
+            return True
     except Exception as err:
         print(err)
         return False

@@ -4,7 +4,8 @@ const dashboardUserTemplate = require('../../templates/handlebars/dashboard-pers
 const drinksRecipePage = require('../../templates/handlebars/drinks-recipe-page.hbs');
 const favoritesTemplate = require('../../templates/handlebars/dashboard-favorites.hbs');
 
-
+// Load croppie module
+const Croppie = require('croppie');
 // ----------------------------------------------------------------------------- CROPPIE LISTENERS
 let croppieObject;
 $('.croppie-file-input').on('change', event => {
@@ -283,6 +284,13 @@ const addRecipe = btn => {
     formParams.ingredients = ingredientsList;
     console.log(formParams);
 
+    // Get labels
+    const selectElem = $('select');
+    const instance = M.FormSelect.getInstance(selectElem);
+    const labelIds = instance.getSelectedValues();
+    formParams.labels = labelIds;
+
+
     // Check if file was uploaded
     if ($('.croppie-file-input')[0].files[0]) {
         console.log($('.croppie-file-input')[0].files[0])
@@ -294,6 +302,11 @@ const addRecipe = btn => {
     // Check if values are not empty
     if (formParams.title == "" || formParams.description == "" || formParams.recipe == "" || formParams.ingredients == "") {
         return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
+    }
+
+    // Check if at least one label is selected
+    if (labelIds.length == 0) {
+        return M.toast({ html: 'Please select at least one label!', classes: 'red darken-1' });
     }
 
     // Check if croppie object exists
@@ -356,6 +369,12 @@ const updateRecipe = btn => {
     formParams.ingredients = ingredientsList;
     console.log(formParams);
 
+    // Get labels
+    const selectElem = $('select');
+    const instance = M.FormSelect.getInstance(selectElem);
+    const labelIds = instance.getSelectedValues();
+    formParams.labels = labelIds;
+
     // Check if file was uploaded
     if ($('.croppie-file-input')[0].files[0]) {
         // console.log($('.croppie-file-input')[0].files[0])
@@ -365,6 +384,11 @@ const updateRecipe = btn => {
     // Check if values are not empty
     if (formParams.title == "" || formParams.description == "" || formParams.recipe == "") {
         return M.toast({ html: 'Please fill in all input fields', classes: 'red darken-1' });
+    }
+
+    // Check if at least one label is selected
+    if (labelIds.length == 0) {
+        return M.toast({ html: 'Please select at least one label!', classes: 'red darken-1' });
     }
 
     // Check if croppie object exists
@@ -582,7 +606,12 @@ const deleteRecipe = recipeId => {
             // Render template
             console.log(resObj)
             if (resObj.status == 'ok') {
-                getUserRecipes(TE.activeUserRecipePage);
+                if (window.location.pathname == '/dashboard') {
+                    getUserRecipes(TE.activeUserRecipePage);
+                }
+                else {
+                    window.location = document.referrer;
+                }
             }
         })
     }

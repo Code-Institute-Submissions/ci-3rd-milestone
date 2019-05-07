@@ -5,12 +5,12 @@ import base64
 import datetime
 import math
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, abort
-from lib.scripts import user_logged_in, convert_datetime, check_owner
+from lib.scripts import user_logged_in, convert_datetime, check_owner, check_active_labels
 from lib.db import new_connection, initialize_db, create_recipe, get_user_recipes, get_user_data, \
     update_user_image_path, update_user_data, get_recipe_data, delete_recipe, count_user_recipes, \
     get_all_recipes, count_all_recipes, update_recipe, create_comment, get_comments, delete_comment, \
     add_view, get_favorite, create_favorite, delete_favorite, get_all_favorites, get_ratings, \
-        add_rating, update_rating
+    add_rating, update_rating, get_labels, add_labels_to_recipe, delete_labels
 
 
 # Initialize Flask
@@ -191,7 +191,8 @@ def drinks_recipes():
 @app.route('/recipe', methods=['GET', 'POST'])
 def recipe():
     if request.method == 'GET':
-        return render_template('new-recipe.html', pageTitle='Add Recipe', navBar=True, logged_in=user_logged_in())
+        labels = get_labels()
+        return render_template('new-recipe.html', pageTitle='Add Recipe', navBar=True, logged_in=user_logged_in(), labels=labels)
     elif request.method == 'POST':
         if request.is_json:
             recipe_data = request.get_json()
@@ -210,8 +211,13 @@ def recipe():
             # Create new recipe
             db_operation = create_recipe(recipe_data)
 
-            if db_operation:
-                return redirect(url_for('dashboard'))
+            # Update labels
+            if db_operation is not False:
+                db_operation_labels = add_labels_to_recipe(
+                    db_operation['recipe_id'], recipe_data['labels'])
+
+            if db_operation_labels:
+                return redirect(url_for('get_recipe_page', recipe_id=db_operation['recipe_id']))
             else:
                 return jsonify(message='Something went wrong during database operation', status='failed')
         else:
@@ -267,6 +273,10 @@ def get_recipe_page(recipe_id):
     if recipe_id.isdigit():
         # GET REQUEST
         if request.method == 'GET':
+
+            # Get arguments from url to determine edit mode
+            editMode = request.args.get('edit')
+
             # Get recipe data
             recipe_data = get_recipe_data(recipe_id)
             if recipe_data is None:
@@ -274,40 +284,52 @@ def get_recipe_page(recipe_id):
 
             recipe_data = check_owner(recipe_data, session['user_id'])
 
-            # Check favorite
-            favorite = get_favorite(recipe_id, session['user_id'])
-            if len(favorite) == 0:
-                recipe_data['favorite'] = False
-            else:
-                recipe_data['favorite'] = True
-
-            # Get ratings
-            rating_data = get_ratings(recipe_id, session['user_id'])
-
-            # Get comments and check if user is owner
-            comments = get_comments(recipe_id)
-            comments = [check_owner(
-                comment, session['user_id']) for comment in comments]
-            commentsAvailable = True if len(comments) > 0 else False
-
-            # Get arguments from url to determine edit mode
-            editMode = request.args.get('edit')
+            # Get labels in recipe
+            label_data = get_labels(recipe_id)
 
             # When in edit mode, return edit-recipe.html
             if editMode == 'true':
+                # Get list of label ids that are present in the recipe
+                recipe_labels = []
+                for label in label_data:
+                    recipe_labels.append(label['label_id'])
+
+                # Get all labels present in the tasting experience site
+                all_labels = get_labels()
+
+                # Check labels active in recipe
+                all_labels = [check_active_labels(
+                    label, recipe_labels) for label in all_labels]
+
+                # print(all_labels)
                 return render_template('edit-recipe.html', pageTitle='Edit recipe', navBar=True, logged_in=user_logged_in(),
                                        title=recipe_data['title'], description=recipe_data[
-                                           'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
-                                       image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
-                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], id=recipe_id)
+                                           'description'], recipe=recipe_data['recipe'], image_path=recipe_data['image_path'],
+                                       ingredients=recipe_data['ingredients'], id=recipe_id, labels=all_labels)
             else:
+                # Check favorite
+                favorite = get_favorite(recipe_id, session['user_id'])
+                if len(favorite) == 0:
+                    recipe_data['favorite'] = False
+                else:
+                    recipe_data['favorite'] = True
+
+                # Get ratings
+                rating_data = get_ratings(recipe_id, session['user_id'])
+
+                # Get comments and check if user is owner
+                comments = get_comments(recipe_id)
+                comments = [check_owner(
+                    comment, session['user_id']) for comment in comments]
+                commentsAvailable = True if len(comments) > 0 else False
+
                 return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
                                        title=recipe_data['title'], description=recipe_data[
                                            'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
                                        image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
                     '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'],
                     favorite=recipe_data['favorite'], id=recipe_id, comments=comments, rating=rating_data,
-                    commentsAvailable=commentsAvailable)
+                    commentsAvailable=commentsAvailable, labels=label_data)
 
         # DELETE REQUEST
         elif request.method == 'DELETE':
@@ -358,7 +380,12 @@ def get_recipe_page(recipe_id):
                 # Update the recipe
                 db_operation = update_recipe(recipe_data, recipe_id)
 
-                if db_operation:
+                # Update labels by deleting and creating them
+                delete_labels(recipe_id)
+                db_operation_labels = add_labels_to_recipe(recipe_id, recipe_data['labels'])
+
+
+                if db_operation and db_operation_labels:
                     return jsonify(message='Recipe successfully updated!', status='success')
                 else:
                     return jsonify(message='Something went wrong during database operation', status='failed')
@@ -448,16 +475,17 @@ def update_rating_recipe():
         rating = get_ratings(rating_data['recipe_id'], session['user_id'])
 
         if rating['user_rating'] == None:
-            db_operation = add_rating(rating_data['recipe_id'], session['user_id'], rating_data['rating'])
+            db_operation = add_rating(
+                rating_data['recipe_id'], session['user_id'], rating_data['rating'])
         else:
-            db_operation = update_rating(rating_data['recipe_id'], session['user_id'], rating_data['rating'])
+            db_operation = update_rating(
+                rating_data['recipe_id'], session['user_id'], rating_data['rating'])
 
         # Check if db operation was successful
         if db_operation:
             return jsonify(message='Rating updated!', status='success')
         else:
             return jsonify(message='Something went wrong :/', status='failed')
-
 
     return jsonify(message='Request is not JSON', status='failed')
 

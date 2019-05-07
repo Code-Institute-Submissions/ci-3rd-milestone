@@ -554,3 +554,16 @@ nav {
     font-size: 0.9rem;
     color: gray;
 }
+
+.labels-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+.labels-container .label {
+    padding: 0.3em 0.6em;
+    margin: 0 0.3em;
+    background-color: #f67234;
+    font-size: 14px;
+    color: white;
+}
