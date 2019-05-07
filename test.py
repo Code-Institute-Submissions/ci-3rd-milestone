@@ -13,4 +13,4 @@ from lib.db import create_favorite, get_favorite, add_rating, update_rating, get
 
 # db_operation = update_rating('38', '1', 4)
 
-add_labels_to_recipe(41, [1, 2, 3])
+print(get_ratings(38))

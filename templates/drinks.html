@@ -2,23 +2,46 @@
 
 {% block content %}
 <div class="container drinks-container">
-  <div class="row" style="padding: 1.5rem">
-    <div class="col s3 filter-container">
-      <p>this is the filter area</p>
+  <div class="filter-container">
+    <div class="input-field">
+      <select id="label-selector" multiple>
+        <option value="" disabled>Select labels</option>
+        {% for label in labels %}
+        <option value="{{label.id}}">{{label.name}}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="col s9">
-      <div class="recipes-page-container">
-
-      </div>
-
+    <div class="input-field">
+      <select id="rating-selector">
+        <option value="" disabled selected>Select rating</option>
+        <option value="5">5 stars</option>
+        <option value="4">4 stars</option>
+        <option value="3">3 stars</option>
+        <option value="2">2 stars</option>
+        <option value="1">1 star</option>
+        <option value="0">All</option>
+      </select>
+    </div>
+    <div class="filter-submit">
+      <a class="waves-effect waves-light btn btn-small deep-orange darken-1" onclick="TE.getRecipes(1)">Search</a>
     </div>
   </div>
+
+  <div class="recipes-page-container">
+
+  </div>
+
 
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
-  TE.getRecipes();
+  $(document).ready(function () {
+    TE.getRecipes();
+
+  });
+
+
 </script>
 {% endblock %}

@@ -355,12 +355,24 @@ nav {
 }
 
 .filter-container {
-    border-right: 1px solid #ebeaea;
-    height: 100vh;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
+    border-bottom: 1px solid #ebeaea;
+    background-color: #fafafa;
+}
+
+.filter-container div:last-child {
+    margin-left: auto;
+}
+
+.filter-container > .input-field {
+    margin: 0 2rem;
 }
 
 .recipes-page-container {
-    margin-left: 2rem;
+    padding: 2rem;
 }
 
 .recipes-pagination {

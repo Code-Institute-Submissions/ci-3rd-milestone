@@ -8,7 +8,7 @@
     <div class="col s12 m9 title">
       <h3>{{title}}</h3>
     </div>
-    {% if owner %}
+    {% if data.owner %}
     <div class="col s12 m3 title">
       <a href="?edit=true" class="waves-effect waves-yellow btn-flat" onclick="atob">edit</a>
       <a href="javascript:void(0);" class="red-text waves-effect waves-red btn-flat"
@@ -19,12 +19,12 @@
 
   <div class="row">
     <div class="col m12 l5">
-      <img class="responsive-img" width="300" height="400" src="/{{ image_path }}">
+      <img class="responsive-img" width="300" height="400" src="/{{ data.image_path }}">
     </div>
     <div class="col m12 l7">
       <div class="row">
         <div class="col s12 m2"><strong>Author</strong></div>
-        <div class="col s12 m10">{{firstname}} {{lastname}}</div>
+        <div class="col s12 m10">{{data.firstname}} {{data.lastname}}</div>
       </div>
       <div class="row">
         <div class="col s12 m2"><strong>Date</strong></div>
@@ -32,7 +32,7 @@
       </div>
       <div class="row">
         <div class="col s12 m2"><strong>Views</strong></div>
-        <div class="col s12 m10">{{views}}</div>
+        <div class="col s12 m10">{{data.views}}</div>
       </div>
       <div class="row">
         <div class="col s12 m2" style="margin-top: 10px;"><strong>Rating</strong></div>
@@ -50,14 +50,14 @@
               <input type="radio" name="rating" value="1" id="1" onclick="TE.updateRating(this)"><label
                 for="1">☆</label>
             </div>
-            <div style="white-space: pre-line">{{rating.average}}<br />{{rating.total}}</div>
+            <div style="white-space: pre-line">{{data.avg_rating}}<br />{{data.nr_ratings}}</div>
           </div>
         </div>
       </div>
       <div class="row" style="display: flex;align-items: center;">
         <div class="col s12 m2"><strong>Favorite</strong></div>
         <div class="col s12 m10">
-          {% if favorite %}
+          {% if data.favorite %}
           <i class="material-icons favorite-recipe favorite-active"
             onclick="TE.toggleFavorite({{ id }}, this)">favorite</i>
           {% else %}
@@ -77,15 +77,15 @@
   </div>
   <div class="row" style="margin-top:3rem">
     <div class="col s12"><strong>Description</strong></div>
-    <div class="col s12">{{description}}</div>
+    <div class="col s12">{{data.description}}</div>
   </div>
   <div class="row" style="margin-top: 3rem;">
     <div class="col s12"><strong>Recipe</strong></div>
-    <div class="col s12" style="white-space: pre-line">{{recipe}}</div>
+    <div class="col s12" style="white-space: pre-line">{{data.recipe}}</div>
   </div>
   <div class="row" style="margin-top: 3rem;">
     <div class="col s12"><strong>Ingredients</strong></div>
-    {% for ingredient in ingredients %}
+    {% for ingredient in data.ingredients %}
     <div class="col s12"><span>&mdash;&emsp;{{ ingredient}}</span></div>
     {% endfor %}
   </div>

@@ -641,14 +641,26 @@ const getRecipes = page => {
                 </div>`)
     }
 
+    // Get search selections
+    $('select').formSelect();
+    const ratingSelectElem = $('#rating-selector');
+    const ratingInstance = M.FormSelect.getInstance(ratingSelectElem);
+    const ratingValue = ratingInstance.getSelectedValues();
+    const labelSelectElem = $('#label-selector');
+    const labelInstance = M.FormSelect.getInstance(labelSelectElem);
+    const labelValues = labelInstance.getSelectedValues().join('+');
+
+    // Query string
+    const querystring = '/drinks/recipes?page=' + page + '&rating=' + ratingValue[0] + '&labels=' + labelValues;
+
     // Get all recipe data from user
-    fetch(window.location.origin + '/drinks/recipes?page=' + page, {
+    fetch(window.location.origin + querystring, {
         method: 'GET'
     }).then(res => {
         // Get json object
         return res.json()
     }).then(resObj => {
-        console.log(resObj);
+        // console.log(resObj);
         let recipes = resObj.recipes;
 
         //Check if equal amount of items

@@ -154,25 +154,41 @@ def dashboard():
 # ============================================================================== DRINKS
 @app.route('/drinks', methods=['GET'])
 def drinks():
-    return render_template('drinks.html', pageTitle='Drinks', navBar=True, logged_in=user_logged_in())
+    labels = get_labels()
+    return render_template('drinks.html', pageTitle='Drinks', navBar=True, logged_in=user_logged_in(), labels=labels)
 
 
 @app.route('/drinks/recipes', methods=['GET'])
 def drinks_recipes():
     try:
-        page = int(request.args.get('page'))
+        page = request.args.get('page')
+        labels = request.args.get('labels')
+        rating = request.args.get('rating')
+
+        # Check if empty
+        if labels == '':
+            labels = None
+        if rating == '':
+            rating = None
+
+        # Try to convert to int when not None
+        if page != None:
+            page = int(page)
+        if rating != None:
+            rating = int(rating)
+        if labels != None:
+            labels = labels.split(' ')
     except:
         return abort(404)
 
-    # Check if query params exists
-    if page is None:
-        page = 1
-
+  
     # Fetch recipe data
     results_per_page = 8
-    recipes = get_all_recipes(results_per_page, page)
+    recipes = get_all_recipes(results_per_page, page, labels, rating)
+
+
     # recipes = [convert_datetime(item) for item in recipes]
-    total_number = count_all_recipes()
+    total_number = count_all_recipes(labels, rating)
 
     # Construct response
     page_range = math.ceil(total_number[0] / results_per_page)
@@ -324,12 +340,8 @@ def get_recipe_page(recipe_id):
                 commentsAvailable = True if len(comments) > 0 else False
 
                 return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),
-                                       title=recipe_data['title'], description=recipe_data[
-                                           'description'], recipe=recipe_data['recipe'], views=recipe_data['views'],
-                                       image_path=recipe_data['image_path'], date=recipe_data['date_created'].strftime(
-                    '%d %b, %Y'), firstname=recipe_data['firstname'], lastname=recipe_data['lastname'], ingredients=recipe_data['ingredients'], owner=recipe_data['owner'],
-                    favorite=recipe_data['favorite'], id=recipe_id, comments=comments, rating=rating_data,
-                    commentsAvailable=commentsAvailable, labels=label_data)
+                                       date=recipe_data['date_created'].strftime('%d %b, %Y'), id=recipe_id, comments=comments, rating=rating_data,
+                    commentsAvailable=commentsAvailable, labels=label_data, data=recipe_data)
 
         # DELETE REQUEST
         elif request.method == 'DELETE':

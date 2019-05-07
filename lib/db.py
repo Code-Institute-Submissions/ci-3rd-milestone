@@ -419,9 +419,10 @@ def get_recipe_data(recipe_id):
                 recipes.description AS description, recipes.recipe AS recipe,
                 recipes.views AS views, recipes.image_path AS image_path,
                 recipes.date_created AS date_created, recipes.ingredients AS ingredients,
+                recipes.avg_rating AS avg_rating, recipes.nr_ratings as nr_ratings,
                 users.firstname AS firstname, users.lastname AS lastname
             FROM `recipes`
-            INNER JOIN `users` ON recipes.user_id=users.id
+            INNER JOIN `users` ON users.id=recipes.user_id
             WHERE recipes.id = %s'''
 
             # Execute command
@@ -439,6 +440,12 @@ def get_recipe_data(recipe_id):
             # Add ingredients to result
             result['ingredients'] = ingredients
 
+            # Update rating data string
+            result['avg_rating'] = str(
+                round(result['avg_rating'], 1)) + ' out of 5 stars'
+            result['nr_ratings'] = str(
+                result["nr_ratings"]) + ' ratings' if result["nr_ratings"] != 1 else str(result["nr_ratings"]) + ' rating'
+
             return result
     except Exception as err:
         print(err)
@@ -453,7 +460,7 @@ This function gets all recipe data for the drinks page
 '''
 
 
-def get_all_recipes(results_per_page, page):
+def get_all_recipes(results_per_page, page, labels, rating):
     # Determine start
     start_results = results_per_page * (int(page) - 1)
 
@@ -461,16 +468,86 @@ def get_all_recipes(results_per_page, page):
 
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql = '''
-            SELECT
-                id, title, description, views, image_path, date_created
-            FROM `recipes`
-            ORDER BY date_created DESC
-            LIMIT %s, %s
-            '''
+            # When no search query
+            if labels is None and rating is None:
+                sql = '''
+                SELECT
+                    id, title, description, views, image_path, date_created, avg_rating
+                FROM recipes
+                ORDER BY date_created DESC
+                LIMIT %s, %s
+                '''
 
-            # Execute command
-            cursor.execute(sql, (start_results, results_per_page))
+                # Execute command
+                cursor.execute(sql, (start_results, results_per_page))
+
+            elif labels is None and rating is not None:
+                # Get recipes with specific rating
+                sql = '''
+                SELECT
+                    id, title, description, views, image_path, date_created, avg_rating
+                FROM recipes
+                WHERE avg_rating >= %s
+                ORDER BY avg_rating DESC
+                LIMIT %s, %s
+                '''
+
+                # Execute command
+                cursor.execute(
+                    sql, (rating-0.2, start_results, results_per_page))
+
+            elif rating is None and labels is not None:
+                # Get recipes with specific rating
+                sql = '''
+                SELECT
+                    recipes.id, title, description, views, image_path, date_created, avg_rating
+                FROM recipes
+                INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
+                WHERE '''
+                
+                for i in range(len(labels)):
+                    if i < len(labels)-1:
+                        sql += 'label_recipe.label_id = %s OR '
+                    else:
+                        sql += 'label_recipe.label_id = %s'
+                
+                sql += '''
+                ORDER BY recipes.avg_rating DESC
+                LIMIT %s, %s
+                '''
+
+                # Execute command
+                sqlParams = labels.copy()
+                sqlParams.extend([start_results, results_per_page])
+
+                cursor.execute(sql, sqlParams)
+            
+            elif rating is not None and labels is not None:
+                # Get recipes with specific rating
+                sql = '''
+                SELECT
+                    recipes.id, title, description, views, image_path, date_created, avg_rating
+                FROM recipes
+                INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
+                WHERE ('''
+                
+                for i in range(len(labels)):
+                    if i < len(labels)-1:
+                        sql += 'label_recipe.label_id = %s OR '
+                    else:
+                        sql += 'label_recipe.label_id = %s) AND avg_rating >= %s'
+                
+                sql += '''
+                ORDER BY recipes.avg_rating DESC
+                LIMIT %s, %s
+                '''
+
+                # Execute command
+                sqlParams = labels.copy()
+                sqlParams.extend([rating-0.2, start_results, results_per_page])
+
+                cursor.execute(sql, sqlParams)
+
 
             # Get all results
             results = cursor.fetchall()
@@ -489,17 +566,64 @@ This function counts all recipes
 '''
 
 
-def count_all_recipes():
+def count_all_recipes(labels, rating):
     connection = new_connection()
 
     try:
         with connection.cursor() as cursor:
-            sql = '''
-                SELECT COUNT(*) FROM `recipes`
-                '''
+            # When no search query
+            if labels is None and rating is None:
+                sql = '''
+                    SELECT COUNT(*) FROM recipes
+                    '''
+                # Execute command
+                cursor.execute(sql)
 
-            # Execute command
-            cursor.execute(sql)
+            elif labels is None and rating is not None:
+                sql = '''
+                    SELECT COUNT(*) 
+                    FROM recipes
+                    WHERE avg_rating >= %s
+                    '''
+                # Execute command
+                cursor.execute(sql, rating-0.2)
+
+            elif rating is None and labels is not None:
+                sql = '''
+                    SELECT COUNT(*) 
+                    FROM recipes
+                    INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
+                    WHERE
+                    '''
+                for i in range(len(labels)):
+                    if i < len(labels)-1:
+                        sql += 'label_recipe.label_id = %s OR '
+                    else:
+                        sql += 'label_recipe.label_id = %s'
+               
+                # Execute command
+                cursor.execute(sql, labels)
+
+            elif rating is not None and labels is not None:
+                # Get recipes with specific rating
+                sql = '''
+                SELECT COUNT(*)
+                FROM recipes
+                INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
+                WHERE ('''
+                
+                for i in range(len(labels)):
+                    if i < len(labels)-1:
+                        sql += 'label_recipe.label_id = %s OR '
+                    else:
+                        sql += 'label_recipe.label_id = %s) AND avg_rating >= %s'
+          
+
+                # Execute command
+                sqlParams = labels.copy()
+                sqlParams.extend([rating-0.2])
+
+                cursor.execute(sql, sqlParams)
 
             # Get all results
             result = cursor.fetchone()
@@ -812,6 +936,20 @@ def add_rating(recipe_id, user_id, rating):
             # Commit to database
             connection.commit()
 
+            # Update rating on recipe
+            ratings = get_ratings(recipe_id)
+            sql = '''
+                    UPDATE recipes
+                    SET avg_rating = %s, nr_ratings = %s
+                    WHERE id = %s
+                '''
+            # Execute query
+            cursor.execute(
+                sql, (ratings["average"], ratings["total"], recipe_id))
+
+            # Commit to database
+            connection.commit()
+
             return True
 
     except Exception as err:
@@ -841,6 +979,20 @@ def update_rating(recipe_id, user_id, rating):
             # Execute query
             cursor.execute(
                 sql, (rating, recipe_id, user_id))
+
+            # Commit to database
+            connection.commit()
+
+            # Update rating on recipe
+            ratings = get_ratings(recipe_id)
+            sql = '''
+                    UPDATE recipes
+                    SET avg_rating = %s, nr_ratings = %s
+                    WHERE id = %s
+                '''
+            # Execute query
+            cursor.execute(
+                sql, (ratings["average"], ratings["total"], recipe_id))
 
             # Commit to database
             connection.commit()
@@ -891,8 +1043,8 @@ def get_ratings(recipe_id, user_id=None):
 
             result = {
                 "ratings": ratings,
-                "average": str(round(averageRating, 1)) + ' out of 5 stars',
-                "total": str(len(ratings)) + ' ratings' if len(ratings) != 1 else str(len(ratings)) + ' rating',
+                "average": averageRating,
+                "total": len(ratings),
                 "user_rating": None
             }
 
@@ -938,7 +1090,7 @@ def get_labels(recipe_id=None):
                     '''
                 # Execute query
                 cursor.execute(sql)
-            else: 
+            else:
                 sql = '''
                     SELECT label_recipe.id AS id, label_recipe.recipe_id AS recipe_id, 
                     label_recipe.label_id AS label_id, labels.name AS name 
@@ -948,7 +1100,7 @@ def get_labels(recipe_id=None):
                     ORDER BY name ASC
                     '''
                 # Execute query
-                cursor.execute(sql,recipe_id)            
+                cursor.execute(sql, recipe_id)
 
             # Get results
             results = cursor.fetchall()
@@ -959,7 +1111,6 @@ def get_labels(recipe_id=None):
         return False
     finally:
         connection.close()
-
 
 
 '''
@@ -982,8 +1133,7 @@ def add_labels_to_recipe(recipe_id, labels):
                     sql += ' (' + str(recipe_id) + ',' + str(labels[i]) + '), '
                 else:
                     sql += ' (' + str(recipe_id) + ',' + str(labels[i]) + ')'
-            
-          
+
             # Execute query
             cursor.execute(sql)
 
@@ -997,7 +1147,6 @@ def add_labels_to_recipe(recipe_id, labels):
         return False
     finally:
         connection.close()
-
 
 
 '''

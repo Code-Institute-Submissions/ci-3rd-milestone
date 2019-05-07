@@ -56,6 +56,6 @@ This project uses several existing third party technologies to improve code qual
 
 ### Media
 - Images used in this project are grabbed from [pixabay](https://pixabay.com).
-
+https://best-cocktails-recipes.com/recipe-categories/
 ### Acknowledgements
 
