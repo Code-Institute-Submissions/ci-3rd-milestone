@@ -326,7 +326,7 @@ const addRecipe = btn => {
                                 </div>`);
 
             // Send response to sercer
-            fetch(window.location.origin + '/recipe', {
+            fetch(window.location.origin + '/recipe/', {
                 method: 'POST',
                 body: JSON.stringify(formParams),
                 headers: {
@@ -574,7 +574,7 @@ const updateUserData = () => {
     $('#user-container').append(htmlString);
 
     // Get all recipe data from user
-    fetch(window.location.origin + '/user', {
+    fetch(window.location.origin + '/user/', {
         method: 'POST',
         body: JSON.stringify(formParams),
         headers: {
