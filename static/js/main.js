@@ -1,11 +1,10 @@
+require('./croppie');
 // RENDER TEMPLATES
 const user = require('./user');
 const recipe = require('./recipe');
 const comment = require('./comment');
 const utils = require('./utils');
 
-// Load croppie
-require('./croppie');
 
 
 // ----------------------------------------------------------------------------- EXPORTS
@@ -21,7 +20,7 @@ exports.deleteRecipe = recipe.deleteRecipe;
 exports.getRecipes = recipe.getRecipes;
 exports.addRecipeLine = recipe.addRecipeLine;
 exports.removeRecipeLine = recipe.removeRecipeLine;
-exports.postComment = comment.ostComment;
+exports.postComment = comment.postComment;
 exports.deleteComment = comment.deleteComment;
 exports.toggleFavorite = utils.toggleFavorite;
 exports.updateRating = utils.updateRating;

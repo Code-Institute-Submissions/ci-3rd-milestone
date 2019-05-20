@@ -309,6 +309,7 @@ nav {
     padding: 3rem;
 }
 
+
 .ruler {
     height: 0.15rem;
     background-color: #868686;
@@ -361,6 +362,7 @@ nav {
     padding: 2rem;
     border-bottom: 1px solid #ebeaea;
     background-color: #fafafa;
+    flex-wrap: wrap;
 }
 
 .filter-container div:last-child {
@@ -611,4 +613,63 @@ nav {
     line-height: 1.7;
     font-weight: 200;
     text-align: justify;
+}
+
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .recipe-container {
+        padding: 1rem;
+    }
+
+    .comment-container {
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    .input-comment-container {
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    .filter-container > .input-field {
+        margin: 0;
+        flex-basis: 45%;
+    }
+
+    .filter-submit {
+        margin: 0;
+        margin-top: 1rem;
+    }
+
+    .recipes-page-container {
+        padding: 1rem !important;
+    }
+
+    .items-page-card-link {
+        margin: 0;
+    }
+
+    .card-content {
+        padding: 1rem !important;
+    }
+
+    .card-action {
+        padding: 0.5rem 1rem !important;
+    }
+
+    .recipe-card-container {
+        padding: 0 !important;
+    }
+
+    .recipe-card-container .card-content > .description {
+        display:none;
+    }
+
+    .delete-action {
+        top: unset;
+        bottom: 40px;
+
+    }
+ 
 }

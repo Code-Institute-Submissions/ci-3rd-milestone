@@ -1,4 +1,40 @@
 const drinksRecipePage = require('../../templates/handlebars/drinks-recipe-page.hbs');
+const user = require('./user');
+
+// ----------------------------------------------------------------------------- CROPPIE LISTENER
+let croppieObject;
+$('.croppie-file-input').on('change', event => {
+  if ($('.croppie-file-input')[0].files[0]) {
+    console.log('Image found in input field');
+    $('.upload-img').attr('src', '/static/images/placeholder.png')
+
+    const fileupload = $('.croppie-file-input')[0].files[0];
+    const reader = new FileReader();
+
+    // Read data in reader object
+    reader.readAsDataURL(fileupload);
+
+    // Function: start croppie object and bind image to div
+    reader.onloadend = function () {
+      if (!croppieObject) {
+        croppieObject = $('#croppie').croppie({
+          viewport: {
+            width: 180,
+            height: 240
+          },
+          boundary: { width: 300, height: 300 },
+        });
+      }
+      croppieObject.croppie('bind', {
+        url: this.result
+      });
+    }
+  } else {
+    console.log('No file found in input field');
+  }
+});
+
+
 
 // ----------------------------------------------------------------------------- ADD RECIPE
 exports.addRecipe = btn => {
@@ -208,7 +244,7 @@ exports.deleteRecipe = recipeId => {
       console.log(resObj)
       if (resObj.status == 'ok') {
         if (window.location.pathname == '/dashboard') {
-          getUserRecipes(TE.activeUserRecipePage);
+          user.getUserRecipes(TE.activeUserRecipePage);
         }
         else {
           window.location = document.referrer;
@@ -274,8 +310,8 @@ exports.getRecipes = page => {
     // Map description and rating 
     resObj.recipes.map(recipe => {
       // Cut description if necessary
-      if (recipe.description.length > 100) {
-        recipe.description = recipe.description.slice(0, 100) + '...';
+      if (recipe.description.length > 65) {
+        recipe.description = recipe.description.slice(0, 65) + '...';
       }
       // Determinae how many stars
       recipe.stars = {

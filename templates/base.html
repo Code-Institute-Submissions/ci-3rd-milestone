@@ -27,18 +27,26 @@
     {% else %}
     <nav class="transparent z-depth-0">
       {% endif %}
+
       <div class="container">
         <div class="nav-wrapper">
           <a href="/" class="brand-logo"><img {% if navBar %}
               src="{{ url_for('static',filename='images/logo-black.png') }}" {% else %}
               src="{{ url_for('static',filename='images/logo-white.png') }}" {% endif %} class="logo"></a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
+          {% if navBar %}
+          <a href="#" style="color:black" data-target="mobile-demo" class="sidenav-trigger"><i
+              class="material-icons">menu</i></a>
+          {% else %}
+          <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+          {% endif %}
+          <ul class="right hide-on-med-and-down">
             <li><a href="/" {% if navBar %} class="black-text" {% endif %}>Home</a></li>
             <li><a href="/drinks" {% if navBar %} class="black-text" {% endif %}>Drinks</a></li>
             <li><a href="/about" {% if navBar %} class="black-text" {% endif %}>About</a></li>
             {% if logged_in %}
             <li><a href="/dashboard" {% if navBar %} class="black-text" {% endif %}>My Dashboard</a></li>
-            <li><a href="/logout" class="deep-orange-text text-darken-1">Logout</a></li>
+            <li><a class="deep-orange-text text-darken-1" href="/recipe">Add recipe</a></li>
+            <li><a href="/logout" class="waves-effect waves-teal btn-flat grey lighten-3">Logout</a></li>
             {% else %}
             <li><a href="/login" class="waves-effect waves-light btn-small deep-orange darken-1">Login</a></li>
             {% endif %}
@@ -46,6 +54,18 @@
         </div>
       </div>
     </nav>
+    <ul id="mobile-demo" class="sidenav">
+      <li><a href="/" {% if navBar %} class="black-text" {% endif %}>Home</a></li>
+      <li><a href="/drinks" {% if navBar %} class="black-text" {% endif %}>Drinks</a></li>
+      <li><a href="/about" {% if navBar %} class="black-text" {% endif %}>About</a></li>
+      {% if logged_in %}
+      <li><a href="/dashboard" {% if navBar %} class="black-text" {% endif %}>My Dashboard</a></li>
+      <li><a class="deep-orange-text text-darken-1" href="/recipe">Add recipe</a></li>
+      <li><a href="/logout" class="waves-effect waves-teal btn-flat grey lighten-3">Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="waves-effect waves-light btn-small deep-orange darken-1">Login</a></li>
+      {% endif %}
+    </ul>
     {% block content %}
     {% endblock %}
 
@@ -53,6 +73,11 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.bundle.js') }}"></script>
+    <script>
+      $(document).ready(function () {
+        $('.sidenav').sidenav();
+      });
+    </script>
     {% block script %}
     {% endblock %}
 

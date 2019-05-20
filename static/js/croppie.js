@@ -2,36 +2,6 @@ const Croppie = require('croppie');
 
 // ----------------------------------------------------------------------------- CROPPIE LISTENERS
 let croppieObject;
-$('.croppie-file-input').on('change', event => {
-  if ($('.croppie-file-input')[0].files[0]) {
-    console.log('Image found in input field');
-    $('.upload-img').attr('src', '/static/images/placeholder.png')
-
-    const fileupload = $('.croppie-file-input')[0].files[0];
-    const reader = new FileReader();
-
-    // Read data in reader object
-    reader.readAsDataURL(fileupload);
-
-    // Function: start croppie object and bind image to div
-    reader.onloadend = function () {
-      if (!croppieObject) {
-        croppieObject = $('#croppie').croppie({
-          viewport: {
-            width: 180,
-            height: 240
-          },
-          boundary: { width: 300, height: 300 },
-        });
-      }
-      croppieObject.croppie('bind', {
-        url: this.result
-      });
-    }
-  } else {
-    console.log('No file found in input field');
-  }
-});
 
 $('.croppie-file-input-modal').on('change', event => {
   if ($('.croppie-file-input-modal')[0].files[0]) {
@@ -100,3 +70,4 @@ $('#crop-profile-picture').on('click', function () {
     console.log('No croppie object found');
   }
 })
+
