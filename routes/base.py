@@ -117,11 +117,17 @@ def login():
 def dashboard():
     return render_template('dashboard.html', pageTitle='My Dashboard', navBar=True, logged_in=user_logged_in())
 
+# ============================================================================== ABOUT
+@base_pages.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html', pageTitle='About', navBar=True, logged_in=user_logged_in())
+
 # ============================================================================== LOGOUT
 @base_pages.route('/logout')
 def logout():
     # Remove logged_in key
     session.pop('logged_in', None)
+    session.pop('user_id')
 
     # Logs
     print('User logged out')

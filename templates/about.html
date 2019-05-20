@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+
+<!-- Page content block -->
+{% block content %}
+<div class="container white recipe-container">
+  <div class="row">
+    <div class="col s12 m9 title">
+      <h3>About</h3>
+    </div>
+  </div>
+
+  <div class="row valign-wrapper">
+    <div class="col m12 l6">
+      <p class="about-text">Welcome to The Tasting Experience. If you want to start developing a cultural taste and
+        increase your knowlegde
+        about several drinks, all with their own interesting characteristics, you are at the right place! Why do you
+        want to develop a taste of your "own"? One reason could be for social drinking. Social drinking, also commonly
+        referred to as responsible drinking, refers to casual drinking of alcoholic beverages in a social setting
+        without an intent to become intoxicated. In Western cultures, good news is often celebrated by a group of people
+        having a few alcoholic drinks. For example, alcoholic drinks may be served to "wet the baby's head" in the
+        celebration of a birth. Buying someone an alcoholic drink is often considered a gesture of goodwill. It may be
+        an expression of gratitude, or it may mark the resolution of a dispute.
+      </p>
+    </div>
+    <div class="col l6 hide-on-med-and-down">
+      <img class="responsive-img" style="max-height: 400px"
+        src="{{ url_for('static',filename='images/social-drinking-lg.jpg') }}">
+    </div>
+  </div>
+
+
+
+
+</div>
+{% endblock %}

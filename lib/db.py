@@ -509,13 +509,13 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE '''
-                
+
                 for i in range(len(labels)):
                     if i < len(labels)-1:
                         sql += 'label_recipe.label_id = %s OR '
                     else:
                         sql += 'label_recipe.label_id = %s'
-                
+
                 sql += '''
                 ORDER BY recipes.avg_rating DESC
                 LIMIT %s, %s
@@ -526,7 +526,7 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 sqlParams.extend([start_results, results_per_page])
 
                 cursor.execute(sql, sqlParams)
-            
+
             elif rating is not None and labels is not None:
                 # Get recipes with specific rating
                 sql = '''
@@ -536,13 +536,13 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE ('''
-                
+
                 for i in range(len(labels)):
                     if i < len(labels)-1:
                         sql += 'label_recipe.label_id = %s OR '
                     else:
                         sql += 'label_recipe.label_id = %s) AND avg_rating >= %s'
-                
+
                 sql += '''
                 ORDER BY recipes.avg_rating DESC
                 LIMIT %s, %s
@@ -553,7 +553,6 @@ def get_all_recipes(results_per_page, page, labels, rating):
                 sqlParams.extend([rating-0.2, start_results, results_per_page])
 
                 cursor.execute(sql, sqlParams)
-
 
             # Get all results
             results = cursor.fetchall()
@@ -606,7 +605,7 @@ def count_all_recipes(labels, rating):
                         sql += 'label_recipe.label_id = %s OR '
                     else:
                         sql += 'label_recipe.label_id = %s'
-               
+
                 # Execute command
                 cursor.execute(sql, labels)
 
@@ -617,13 +616,12 @@ def count_all_recipes(labels, rating):
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE ('''
-                
+
                 for i in range(len(labels)):
                     if i < len(labels)-1:
                         sql += 'label_recipe.label_id = %s OR '
                     else:
                         sql += 'label_recipe.label_id = %s) AND avg_rating >= %s'
-          
 
                 # Execute command
                 sqlParams = labels.copy()
@@ -1068,6 +1066,7 @@ def get_ratings(recipe_id, user_id=None):
                 user_rating = cursor.fetchone()
 
                 result["user_rating"] = user_rating
+                result["active"] = True
 
             return result
 

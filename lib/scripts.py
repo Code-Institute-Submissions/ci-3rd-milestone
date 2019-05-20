@@ -22,11 +22,16 @@ def convert_datetime_comments(item):
     return item
 
 
-def check_owner(item, user_id):
-    if item['user_id'] == user_id:
-        item['owner'] = True
-    elif user_id == 1:
-        item['owner'] = True
+def check_owner(item, session):
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        if item['user_id'] == user_id:
+            item['owner'] = True
+        elif user_id == 1:
+            item['owner'] = True
+        else:
+            item['owner'] = False
     else:
         item['owner'] = False
     return item

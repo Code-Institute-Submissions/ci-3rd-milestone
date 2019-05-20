@@ -605,3 +605,10 @@ nav {
     font-size: 14px;
     color: white;
 }
+
+.about-text{
+    font-size: 18px;
+    line-height: 1.7;
+    font-weight: 200;
+    text-align: justify;
+}

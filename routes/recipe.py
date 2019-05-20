@@ -39,10 +39,10 @@ def recipe():
                 db_operation_labels = add_labels_to_recipe(
                     db_operation['recipe_id'], recipe_data['labels'])
 
-            if db_operation_labels:
-                return redirect(url_for('recipe_pages.get_recipe_page', recipe_id=db_operation['recipe_id']))
-            else:
-                return jsonify(message='Something went wrong during database operation', status='failed')
+                if db_operation_labels:
+                    return redirect(url_for('recipe_pages.get_recipe_page', recipe_id=db_operation['recipe_id']))
+                else:
+                    return jsonify(message='Something went wrong during database operation', status='failed')
         else:
             return jsonify(message='Please provide json request', status='failed')
 
@@ -105,7 +105,7 @@ def get_recipe_page(recipe_id):
             if recipe_data is None:
                 return abort(404)
 
-            recipe_data = check_owner(recipe_data, session['user_id'])
+            recipe_data = check_owner(recipe_data, session)
 
             # Get labels in recipe
             label_data = get_labels(recipe_id)
@@ -130,20 +130,34 @@ def get_recipe_page(recipe_id):
                                            'description'], recipe=recipe_data['recipe'], image_path=recipe_data['image_path'],
                                        ingredients=recipe_data['ingredients'], id=recipe_id, labels=all_labels)
             else:
-                # Check favorite
-                favorite = get_favorite(recipe_id, session['user_id'])
-                if len(favorite) == 0:
-                    recipe_data['favorite'] = False
+
+                if 'user_id' in session:
+                    favorite = get_favorite(recipe_id, session['user_id'])
+
+                    # Check favorite
+                    recipe_data['favorite_active'] = True
+                    recipe_data['comments_active'] = True
+                    if len(favorite) == 0:
+                        recipe_data['favorite'] = False
+                    else:
+                        recipe_data['favorite'] = True
                 else:
-                    recipe_data['favorite'] = True
+                    recipe_data['favorite_active'] = False
+                    recipe_data['comments_active'] = False
 
                 # Get ratings
-                rating_data = get_ratings(recipe_id, session['user_id'])
+                if 'user_id' in session:
+                    rating_data = get_ratings(recipe_id, session['user_id'])
+                else:
+                    rating_data = {
+                        'user_rating': {'rating': 0},
+                        'active': False
+                    }
 
                 # Get comments and check if user is owner
                 comments = get_comments(recipe_id)
                 comments = [check_owner(
-                    comment, session['user_id']) for comment in comments]
+                    comment, session) for comment in comments]
                 commentsAvailable = True if len(comments) > 0 else False
 
                 return render_template('recipe.html', pageTitle='Recipe', navBar=True, logged_in=user_logged_in(),

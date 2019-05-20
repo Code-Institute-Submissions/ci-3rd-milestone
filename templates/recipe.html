@@ -54,6 +54,7 @@
           </div>
         </div>
       </div>
+      {% if data.favorite_active %}
       <div class="row" style="display: flex;align-items: center;">
         <div class="col s12 m2"><strong>Favorite</strong></div>
         <div class="col s12 m10">
@@ -65,6 +66,7 @@
           {% endif %}
         </div>
       </div>
+      {% endif %}
       <div class="row" style="margin-top:3rem">
         <div class="col s12"><strong>Labels</strong></div>
         <div class="col s12 labels-container">
@@ -125,9 +127,10 @@
       <div class="comment">
         <em>Be the first one to write a comment!</em>
       </div>
-      {% endif%}
+      {% endif %}
     </div>
   </div>
+  {% if data.comments_active %}
   <div class="row">
     <div class="input-comment-container">
       <form id="commentForm" class="comment-form" action="/comment/{{ id }}" method="POST">
@@ -139,6 +142,7 @@
       </form>
     </div>
   </div>
+  {% endif %}
 
 
 </div>
@@ -151,7 +155,11 @@
     $('textarea#textarea1').characterCounter();
 
     // Set user rating
+    {% if rating.active %}
     $("input[name=rating][value='{{rating.user_rating.rating}}']").prop('checked', true)
+    {% else %}
+    $(".rating").css('display', 'none');
+    {% endif %}
 
     // Send view page update after 3.5 seconds
     setTimeout(function () {

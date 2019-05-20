@@ -8,7 +8,10 @@ favorite_pages = Blueprint('favorite_pages', __name__)
 def recipe_favorite(recipe_id):
     if request.method == 'POST':
         # Check if favorite already present
-        favorite = get_favorite(recipe_id, session['user_id'])
+        if session['user_id'] in session:
+            favorite = get_favorite(recipe_id, session['user_id'])
+        else:
+            favorite = []
 
         if len(favorite) == 0:
             db_operation = create_favorite(recipe_id, session['user_id'])
