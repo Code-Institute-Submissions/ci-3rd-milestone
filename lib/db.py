@@ -9,13 +9,17 @@ Gives a new database connection
 
 
 def new_connection():
-    return pymysql.connect(
-        host=os.environ['DB_HOST'],
-        user=os.environ['DB_USER_NAME'],
-        password=os.environ['DB_PASSWORD'],
-        db=os.environ['DB_NAME'],
-        charset='utf8',
-        port=int(os.environ['DB_PORT']))
+    try:
+        return pymysql.connect(
+            host=os.environ['DB_HOST'],
+            user=os.environ['DB_USER_NAME'],
+            password=os.environ['DB_PASSWORD'],
+            db=os.environ['DB_NAME'],
+            charset='utf8',
+            port=int(os.environ['DB_PORT']))
+    except Exception as err:
+        print(err)
+        return False
 
 
 '''
