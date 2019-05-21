@@ -20,7 +20,7 @@ def get_user_info(user_id):
 
         return jsonify(user_info)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('base_pages.index'))
 
 
 @user_pages.route('/', methods=['GET', 'POST'])

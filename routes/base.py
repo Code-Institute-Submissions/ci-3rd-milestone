@@ -6,6 +6,13 @@ from lib.scripts import user_logged_in
 
 base_pages = Blueprint('base_pages', __name__, template_folder='templates')
 
+# ============================================================================== INDEX
+@base_pages.route('/')
+def index():
+    return render_template('index.html',
+                           pageTitle='Home',
+                           navBar=False, logged_in=user_logged_in())
+
 # ============================================================================== SIGN UP
 @base_pages.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -133,4 +140,4 @@ def logout():
     print('User logged out')
     print(session)
 
-    return redirect(url_for('index'))
+    return redirect(url_for('base_pages.index'))

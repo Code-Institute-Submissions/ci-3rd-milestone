@@ -10,7 +10,6 @@ except:
 
 print('---> Setting DB environment variables')
 print('')
-# print(config)
 
 # Set environment variables
 if 'DB_HOST' not in os.environ and config is not None:
@@ -23,3 +22,5 @@ if 'DB_NAME' not in os.environ and config is not None:
     os.environ['DB_NAME'] = config['DB_NAME']
 if 'DB_PORT' not in os.environ and config is not None:
     os.environ['DB_PORT'] = config['DB_PORT']
+if 'SECRET_KEY' not in os.environ and config is not None:
+    os.environ['SECRET_KEY'] = config['SECRET_KEY']

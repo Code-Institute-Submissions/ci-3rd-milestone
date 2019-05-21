@@ -75,7 +75,7 @@ def get_recipes(user_id):
         }
         return jsonify(response)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('base_pages.index'))
 
 
 @recipe_pages.route('/user', methods=['GET'])
