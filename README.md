@@ -1,7 +1,7 @@
 # Tasting Experience - Recipes
 This project is build upon [The Tasting Experience](https://github.com/Seboeb/ci-1st-milestone) and [The Tasting Experience Finder](https://github.com/Seboeb/ci-2nd-milestone) project. At The Tasting Experience website you can book a cultural tasting for your friends or beloved ones and at the Tasting Finder website you can find a fancy place to grab some nice drinks. This page allows the fans of The Tasting Experience to find, create and share recipes of some delicous drinks created by the fans!
 
-At [this](https://seboeb.github.io/ci-2nd-milestone/) separate page of The Tasting Experience website you can join The Tasting Experience community!
+At [this](http://the-tasting-experience.herokuapp.com/) separate page of The Tasting Experience website you can join The Tasting Experience community!
 
 ## UX
 The focus of this website is to provide a community platform for the users to share their tasting experiences. You can find recipes for nice drinks or cocktails, but you could also create your own recipes and share them with the rest of the userbase. The website allows to search for specific ingredients, alcoholic percentages, ratings or most viewed drinks.
@@ -78,11 +78,11 @@ npm install
 ```
 This command will install all the module dependencies that are listed in the package.json file. 
 
-Since the webserver runs on Flask, which is a microframework for Python, it is necessary to install Python from their [website](https://www.python.org/). When installing Python, PIP is automatically installed as well. The latter is a package manager for Python. Open a terminal (or command prompt) and cd into your cloned folder. Type in the following command:
+Since the webserver runs on Flask, which is a microframework for Python, it is necessary to install Python from their [website](https://www.python.org/). When installing Python, pip is automatically installed as well. The latter is a package manager for Python. Open a terminal (or command prompt) and cd into your cloned folder. Type in the following command:
 ```
 pip install -r requirements.txt
 ```
-This command will install all the module dependencies that are listed in the requirements.txt. Please note that the actual install command for PIP may vary based on your OS and Python version. 
+This command will install all the module dependencies that are listed in the requirements.txt. Please note that the actual install command for pip may vary based on your OS and Python version. 
 
 This project uses a MySQL database as the backend storage technology. You can run a MySQL server by yourself by using, for instance, the following [docker image](https://hub.docker.com/_/mysql) or by using an online free MySQL service such as [db4free](https://www.db4free.net/). When you have created a MySQL server, please make sure that you update the ```config.json``` file located in the root folder of this repository. This file in necessary in order to connect to you database.
 
@@ -102,15 +102,55 @@ python test.py
 When the test are successful, you should receive the ```Database tests executed successfully!``` message in your terminal.
 
 **JavaScript test**
-When you run the project and navigate with you browser to the website, you can start testing the javascript functions. All the JavaScript functions are written in such a way that possible errors are logged in the console of the browser. When using the Google Chrome browers, you can open the development console and check for network operations and logs in the console while using the The Tasting Experience website.
+When you run the project and navigate with your browser to the website, you can start testing the javascript functions. All the JavaScript functions are written in such a way that possible errors are logged in the console of the browser. When using the Google Chrome browers, you can open the development console and check for network operations and logs in the console while using the The Tasting Experience website.
 
 ## Deployment
+This project is deployed using Heroku and can be seen over [here](http://the-tasting-experience.herokuapp.com/). Heroku is a cloud platform as a service supporting several programming languages. 
+
+Follow the following steps to deploy this project to Heroku by yourself:
+
+1. Create a Heroku account over [here](https://signup.heroku.com).
+2. Create a new app and give it a name.
+3. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+4. Open a terminal and login to heroku by using the ```heroku login``` command.
+5. When successfully logged in, we have to add the remote heroku git repository. In the terminal, navigate to the root folder of your project. When git is not initialize, initialize it with ```git init```. In order to add the remote heroku repository you first have to navigate to the settings of your Heroku application. Under 'Info' you will find your Heroku Git URL (see image below). Copy this git url and execute the following command to add this remote repository to your local git.
+```
+git remote add heroku https://git.heroku.com/the-tasting-experience.git
+```
+6. Make sure that you have included a ```requirements.txt``` and a ```Procfile``` in your projects root folder. An example ```Procfile``` can be found in the source files of this project. 
+7. If you do not have an up-to-date ```requirements.txt``` file, create it using the following command:
+```
+pip freeze > requirements.txt
+```
+8. Now it is time to push your local git repository to your remote Heroku git repository by using the command below. Please note that ```master``` represents the git branche you want to push.
+```
+git push -u heroku master
+```
+9. The application is almost ready to be used on Heroku. Go to the settings tab and make sure you set the Config Vars. These variables are the environment parameters required for the application in order to run. Restart of the dyno may be necessary. See the image below which variables are required.
+
+![heroku settings](https://github.com/Seboeb/ci-3rd-milestone/blob/master/static/images/heroku-settings.png)
+
+## Developing
+If you want to continue developing this project, you can do so by cloning this git repository. Make sure you install the project (see Installing) with the help of npm and pip. Make sure you configure the ```config.json``` file. The webpack config file is already good to go and does not need additional tweaks (but you can if you want). 
+
+The main application file is ```app.py```. All the Flask routes can be found in the ```routes``` folder. The database files and some extra python librabries are located in the ```lib``` folder. The JavaScript, css and images are located in the ```static``` folder, as this folder is statically served by Flask. The html files have their own ```templates``` folder.
+
+In order to build the JavaScript files using webpack, run the following command:
+```
+npm run build
+```
+and for production run:
+```
+npm run build-prod
+```
+
+If you want to write your own testing cases, please add them to the ```test.py``` file located in the root folder.
 
 ## Credits
-
+Find below the sources used for this project. 
 ### Media
 - Images used in this project are grabbed from [pixabay](https://pixabay.com).
-https://best-cocktails-recipes.com/recipe-categories/
-https://www.liquor.com/hub/cocktail-recipes/#gs.aa4tem
-### Acknowledgements
+- Recipes are used from [Best Cocktails Recipes](https://best-cocktails-recipes.com/) and [Liqour.com](https://www.liquor.com/)
 
+### Acknowledgements
+- A good introduction tutorial that I followed for webpack was provided by the Academind [videos](https://www.youtube.com/watch?v=GU-2T7k9NfI&list=PL55RiY5tL51rcCnrOrZixuOsZhAHHy6os).
