@@ -39,5 +39,5 @@ if __name__ == '__main__':
 
     app.config.update(settings)
 
-    app.run(os.environ.get('IP'),
-            port=int('8080'))
+    app.run(os.environ['IP'],
+            port=int(os.environ['PORT']))
