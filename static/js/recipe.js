@@ -87,7 +87,7 @@ exports.addRecipe = btn => {
   }
 
   // Check length of title, description and recipe
-  if (formParams.title.length > 32 || formParams.description.length > 250 || formParams.recipe.length > 500) {
+  if (formParams.title.length > 32 || formParams.description.length > 500 || formParams.recipe.length > 500) {
     return M.toast({ html: 'Too many characters!', classes: 'red darken-1' });
   }
 
@@ -174,7 +174,7 @@ exports.updateRecipe = btn => {
   }
 
   // Check length of title, description and recipe
-  if (formParams.title.length > 32 || formParams.description.length > 250 || formParams.recipe.length > 500) {
+  if (formParams.title.length > 32 || formParams.description.length > 500 || formParams.recipe.length > 500) {
     return M.toast({ html: 'Too many characters!', classes: 'red darken-1' });
   }
 

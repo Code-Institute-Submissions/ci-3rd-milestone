@@ -24,6 +24,8 @@ if 'DB_PORT' not in os.environ and config is not None:
     os.environ['DB_PORT'] = config['DB_PORT']
 if 'SECRET_KEY' not in os.environ and config is not None:
     os.environ['SECRET_KEY'] = config['SECRET_KEY']
+if 'DEBUG' not in os.environ and config is not None:
+    os.environ['DEBUG'] = config['DEBUG']
 if 'PORT' not in os.environ and config is not None:
     os.environ['PORT'] = config['PORT']
 if 'IP' not in os.environ:

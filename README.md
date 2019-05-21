@@ -68,6 +68,24 @@ Additionally, the following webpack modules are used:
     - These modules are used to convert modern ES6 JavaScript files into robust ES5 JavaScript files which is supported on any browser.
 - **handlebars-loader**
 
+## Database model
+This project uses a SQL type database and MySQL to be specific. [Here](https://www.mysql.com/) you can find more about MySQL. This project uses the following database tables:
+- **Users**
+    - In this table the information about the user is stored, e.g. name, email, password.
+- **Recipes**
+    - In this table the information of a recipe is stored, e.g. title, description, labels.
+- **Comments**
+    - This table holds all the comments of users.
+- **Ratings**
+    - User can provide ratings to certain recipes. These ratings are stored in this table.
+- **Labels**
+    - This project uses several labels that can be assigned to recipes. Labels are stored in this table.
+- **Label_recipe**
+    - This is an intermediate table that connects the many-to-many relationship of the labels en recipes together.
+- **Favorites**
+    - This table stores the favorite recipes assigned by users.
+
+A detailed overview of the table structure and data types can be seen in the [database_schema](https://github.com/Seboeb/ci-3rd-milestone/tree/master/database_schema) folder.
 
 ## Installing
 This project uses NodeJs for managing the Javascript libraries, webpack and a testing webserver. Visite their [website](https://nodejs.org/en/) to install NodeJs for your operation system. NodeJs ships with npm, which will be automatically installed.

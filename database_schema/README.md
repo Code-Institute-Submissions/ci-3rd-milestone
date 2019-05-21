@@ -16,9 +16,9 @@
 | id | int NOT NULL AUTO_INCREMENT; PRIMARY KEY |
 | user_id | int NOT NULL; FOREIGN KEY; REFERENCES Users |
 | title | varchar(32) NOT NULL |
-| description | varchar(256) NOT NULL |
+| description | varchar(500) NOT NULL |
 | recipe | varchar(500) NOT NULL |
-| ingredients | varchar(256) NOT NULL |
+| ingredients | varchar(500) NOT NULL |
 | views | int DEFAULT 0 |
 | avg_rating | float DEFAULT 0 |
 | nr_ratings | int DEFAULT 0 |

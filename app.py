@@ -33,9 +33,14 @@ app.register_error_handler(500, server_error)
 
 # Run the webserver
 if __name__ == '__main__':
-    settings = {
-        'DEBUG': True
-    }
+    if os.environ['DEBUG'] == 'TRUE':
+        settings = {
+            'DEBUG': True
+        }
+    else:
+        settings = {
+            'DEBUG': False
+        }
 
     app.config.update(settings)
 
