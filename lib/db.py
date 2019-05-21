@@ -67,7 +67,7 @@ def initialize_db():
                         `user_id` int NOT NULL,
                         `title` varchar(32) NOT NULL,
                         `description` varchar(256) NOT NULL,
-                        `recipe` varchar(256) NOT NULL,
+                        `recipe` varchar(500) NOT NULL,
                         `ingredients` varchar(256) NOT NULL,
                         `views` int DEFAULT 0,
                         `avg_rating` float  DEFAULT 0,
