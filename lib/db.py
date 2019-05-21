@@ -153,7 +153,6 @@ def initialize_db():
                         `label_id` int NOT NULL,
                         PRIMARY KEY (id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id),
-                        ON DELETE CASCADE
                         FOREIGN KEY (label_id) REFERENCES labels(id)
                         ON DELETE CASCADE
                         )'''
@@ -174,8 +173,8 @@ def initialize_db():
                         `user_id` int NOT NULL,
                         PRIMARY KEY (id),
                         FOREIGN KEY (recipe_id) REFERENCES recipes(id),
-                        ON DELETE CASCADE
                         FOREIGN KEY (user_id) REFERENCES users(id)
+                        ON DELETE CASCADE
                         )'''
 
             cursor.execute(sql)
