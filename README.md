@@ -44,7 +44,7 @@ At this moment none.
 
 ## Technologies used
 This project uses several existing third party technologies to improve code quality and to speed up the development time. The following tools are used:
-- **[Python](https://www.python.org/)
+- **[Python](https://www.python.org/)**
     - Python is a programming language that lets you work quickly and integrate systems more effectively
 - **[Flask](http://flask.pocoo.org/)**
     - Flask is a microframework for Python based on Werkzeug and Jinja 2. It is used as a webserver for serving the Tasting Experience website.
