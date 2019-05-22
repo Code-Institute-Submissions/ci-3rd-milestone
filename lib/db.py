@@ -520,6 +520,7 @@ def get_all_recipes(results_per_page, page, labels, rating):
                         sql += 'label_recipe.label_id = %s'
 
                 sql += '''
+                GROUP BY recipes.id
                 ORDER BY recipes.avg_rating DESC
                 LIMIT %s, %s
                 '''
@@ -547,6 +548,7 @@ def get_all_recipes(results_per_page, page, labels, rating):
                         sql += 'label_recipe.label_id = %s) AND avg_rating >= %s'
 
                 sql += '''
+                GROUP BY recipes.id
                 ORDER BY recipes.avg_rating DESC
                 LIMIT %s, %s
                 '''
@@ -582,14 +584,14 @@ def count_all_recipes(labels, rating):
             # When no search query
             if labels is None and rating is None:
                 sql = '''
-                    SELECT COUNT(*) FROM recipes
+                    SELECT COUNT(DISTINCT recipes.id) FROM recipes
                     '''
                 # Execute command
                 cursor.execute(sql)
 
             elif labels is None and rating is not None:
                 sql = '''
-                    SELECT COUNT(*) 
+                    SELECT COUNT(DISTINCT recipes.id) 
                     FROM recipes
                     WHERE avg_rating >= %s
                     '''
@@ -598,7 +600,7 @@ def count_all_recipes(labels, rating):
 
             elif rating is None and labels is not None:
                 sql = '''
-                    SELECT COUNT(*) 
+                    SELECT COUNT(DISTINCT recipes.id) 
                     FROM recipes
                     INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                     WHERE
@@ -608,6 +610,9 @@ def count_all_recipes(labels, rating):
                         sql += 'label_recipe.label_id = %s OR '
                     else:
                         sql += 'label_recipe.label_id = %s'
+                # sql += '''
+                # GROUP BY recipes.id
+                # '''
 
                 # Execute command
                 cursor.execute(sql, labels)
@@ -615,7 +620,7 @@ def count_all_recipes(labels, rating):
             elif rating is not None and labels is not None:
                 # Get recipes with specific rating
                 sql = '''
-                SELECT COUNT(*)
+                SELECT COUNT(DISTINCT recipes.id)
                 FROM recipes
                 INNER JOIN label_recipe ON recipes.id = label_recipe.recipe_id
                 WHERE ('''

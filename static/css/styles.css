@@ -1,5 +1,7 @@
 body {
     font-size: 16px;
+    position: relative;
+    min-height: 100vh;
 }
 
 nav {
@@ -343,8 +345,8 @@ nav {
     position: absolute;
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
+    bottom: 0;
+    right: 0;
     z-index: 5000;
     background-color: rgba(255,255,255,0.7)
 }
@@ -598,11 +600,12 @@ nav {
 .labels-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     margin-top: 10px;
 }
 .labels-container .label {
     padding: 0.3em 0.6em;
-    margin: 0 0.3em;
+    margin: 0.3em;
     background-color: #f67234;
     font-size: 14px;
     color: white;
