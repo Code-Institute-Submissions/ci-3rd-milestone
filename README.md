@@ -165,10 +165,10 @@ npm run build-prod
 If you want to write your own testing cases, please add them to the ```test.py``` file located in the root folder.
 
 ## Credits
-Find below the sources used for this project. 
+This project uses media and recipe data from different sources. 
 ### Media
 - Images used in this project are grabbed from [pixabay](https://pixabay.com).
-- Recipes are used from [Best Cocktails Recipes](https://best-cocktails-recipes.com/) and [Liqour.com](https://www.liquor.com/)
 
 ### Acknowledgements
+- The websites [Best Cocktails Recipes](https://best-cocktails-recipes.com/) and [Liqour.com](https://www.liquor.com/) are used for recipes created by **Sebastiaan Hekner**, **Lilian Brewer**, **Kurt Estrada**, **Elleen Shiffer** and **Brynn HamedSome**. These websites provide a list of all kind of cocktails recipes. Please take a look!
 - A good introduction tutorial that I followed for webpack was provided by the Academind [videos](https://www.youtube.com/watch?v=GU-2T7k9NfI&list=PL55RiY5tL51rcCnrOrZixuOsZhAHHy6os).
